@@ -15,8 +15,8 @@ Goal: a new project that is structured from commit zero.
 3. **Fill placeholders** (`{{PROJECT_NAME}}`, `{{STACK}}`, `{{TEST_CMD}}`, `{{LINT_CMD}}`, `{{BUILD_CMD}}`) in `AGENTS.md`, `CLAUDE.md`, `docs/constitution.md`, `docs/architecture.md`.
 4. **Create `.env.example`** with placeholders only (it is not in the template).
 5. **Create the source skeleton** per `docs/architecture.md` for the first feature only — no empty speculative folders.
-5. **Write ADR 0001** recording the stack and architecture choice (use skill `adr`).
-6. **Stop** and show the tree plus the next step: `/swiftcraft:spec <first feature>`.
+6. **Write ADR 0001** recording the stack and architecture choice (use skill `adr`).
+7. **Stop** and show the tree plus the next step: `/swiftcraft:spec <first feature>`.
 
 ## Rules
 
