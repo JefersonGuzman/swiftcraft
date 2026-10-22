@@ -142,6 +142,39 @@ test("update-check --verbose shows versions, changelog excerpt and the update co
   }
 });
 
+test("update-check prefers the latest GitHub release over a stale raw plugin.json, and uses its notes", async () => {
+  const server = http.createServer((req, res) => {
+    if (req.url === "/releases/latest") {
+      res.setHeader("content-type", "application/json");
+      return res.end(JSON.stringify({ tag_name: "swiftcraft--v99.1.0", body: "## [99.1.0]\n\n### Added\n- From the release body." }));
+    }
+    if (req.url.endsWith("/.claude-plugin/plugin.json")) return res.end(JSON.stringify({ version: installed() })); // stale CDN copy
+    res.statusCode = 404;
+    res.end();
+  });
+  await new Promise((r) => server.listen(0, "127.0.0.1", r));
+  const base = `http://127.0.0.1:${server.address().port}`;
+  try {
+    const r = await check(["--verbose"], { SWIFTCRAFT_UPDATE_API: `${base}/releases/latest`, SWIFTCRAFT_UPDATE_BASE: base, SWIFTCRAFT_CACHE_DIR: cacheDir() });
+    assert.match(r.stdout, /latest: 99\.1\.0/);
+    assert.match(r.stdout, /From the release body/);
+    const n = await check(["--notice"], { SWIFTCRAFT_UPDATE_API: `${base}/releases/latest`, SWIFTCRAFT_UPDATE_BASE: base, SWIFTCRAFT_CACHE_DIR: cacheDir() });
+    assert.match(n.stdout, /99\.1\.0/);
+  } finally {
+    server.close();
+  }
+});
+
+test("update-check falls back to raw plugin.json when the release API fails", async () => {
+  const { server, base } = await serve("99.2.0");
+  try {
+    const r = await check(["--verbose"], { SWIFTCRAFT_UPDATE_API: "http://127.0.0.1:9/releases/latest", SWIFTCRAFT_UPDATE_BASE: base, SWIFTCRAFT_CACHE_DIR: cacheDir() });
+    assert.match(r.stdout, /latest: 99\.2\.0/);
+  } finally {
+    server.close();
+  }
+});
+
 test("update-check --verbose reports up to date and reports network failure with exit 1", async () => {
   const { server, base } = await serve(installed());
   try {

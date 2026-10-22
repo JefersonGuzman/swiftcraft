@@ -80,9 +80,9 @@ const findings = (extra = {}) => ({
   summary: "Looks mostly fine.",
   verdict: "fix first",
   findings: [
-    { path: "src/a.ts", line: 3, severity: "blocker", title: "Null deref", body: "x may be null." },
-    { path: "src/a.ts", line: 99, severity: "should", title: "Off-diff", body: "Not in the diff." },
-    { path: "docs/new.md", line: 1, severity: "nit", title: "Typo", body: "wrold" },
+    { path: "src/a.ts", line: 3, quote: "new3", severity: "blocker", title: "Null deref", body: "x may be null." },
+    { path: "src/a.ts", line: 99, quote: "nothing here", severity: "should", title: "Off-diff", body: "Not in the diff." },
+    { path: "docs/new.md", line: 1, quote: "hello", severity: "nit", title: "Typo", body: "wrold" },
   ],
   ...extra,
 });
@@ -105,6 +105,47 @@ test("buildReview anchors in-diff findings inline and moves the rest to the body
   assert.strictEqual(r.stats.inBody, 1);
 });
 
+test("buildReview verifies the quoted source line: wrong line numbers are relocated or moved to the body", () => {
+  const f = (over) => ({ summary: "s", verdict: "ready", findings: [{ path: "src/a.ts", line: 1, quote: "new2", severity: "should", title: "t", body: "b", ...over }] });
+  // right quote, wrong line number (the reviewer used a patch-file line): relocated to the line that holds the quote
+  const moved = buildReview(f({ line: 4, quote: "new2" }), DIFF, "abc");
+  assert.deepStrictEqual(moved.payload.comments.map((c) => c.line), [2]);
+  // quote not present anywhere in that file's diff: not anchored
+  const missing = buildReview(f({ quote: "does not exist" }), DIFF, "abc");
+  assert.strictEqual(missing.payload.comments.length, 0);
+  assert.strictEqual(missing.stats.inBody, 1);
+  // no quote at all: cannot be verified, so it goes to the body
+  const noQuote = buildReview(f({ quote: undefined }), DIFF, "abc");
+  assert.strictEqual(noQuote.payload.comments.length, 0);
+  assert.strictEqual(noQuote.stats.inBody, 1);
+  // line is right: kept; whitespace and BOM are ignored when matching
+  const bom = buildReview(f({ path: "docs/new.md", line: 1, quote: "  hello " }), DIFF, "abc");
+  assert.deepStrictEqual(bom.payload.comments.map((c) => c.line), [1]);
+});
+
+test("quote matching only ignores whitespace and BOM, not letters", () => {
+  const diff = ["diff --git a/x.js b/x.js", "--- a/x.js", "+++ b/x.js", "@@ -0,0 +1,2 @@", "+﻿const   class_name = 1;", "+const clas_name = 2;"].join("\n");
+  const one = (quote) =>
+    buildReview({ summary: "s", findings: [{ path: "x.js", line: 1, quote, severity: "nit", title: "t", body: "b" }] }, diff, "abc").payload.comments.length;
+  assert.strictEqual(one("const class_name = 1;"), 1); // whitespace runs and the BOM are ignored
+  assert.strictEqual(one("const clas_name = 1;"), 0); // a missing letter is a different line
+});
+
+test("buildReview does not guess when the quote is ambiguous and the line is wrong", () => {
+  const dup = DIFF.replace("+new3", "+new2");
+  const r = buildReview({ summary: "s", findings: [{ path: "src/a.ts", line: 4, quote: "new2", severity: "nit", title: "t", body: "b" }] }, dup, "abc");
+  assert.strictEqual(r.payload.comments.length, 0);
+  assert.strictEqual(r.stats.inBody, 1);
+});
+
+test("parseDiffLines returns the text of each right-side line", () => {
+  const { parseDiffLines } = require("../scripts/lib/diff.js");
+  const d = parseDiffLines(DIFF);
+  assert.strictEqual(d["src/a.ts"].get(2), "new2");
+  assert.strictEqual(d["src/a.ts"].get(4), "line3");
+  assert.strictEqual(d["docs/new.md"].get(1), "hello");
+});
+
 test("buildReview orders by severity and never emits approve/request-changes", () => {
   const r = buildReview(findings(), DIFF, "abc123");
   assert.strictEqual(r.payload.comments[0].body.startsWith("**Blocker**"), true);
@@ -120,7 +161,7 @@ test("buildReview rejects malformed findings", () => {
 
 test("buildReview caps inline comments and overflows to the body; redacts secrets", () => {
   const many = Array.from({ length: MAX_INLINE + 5 }, (_, i) => ({
-    path: "src/a.ts", line: 1 + (i % 4), severity: "nit", title: `n${i}`, body: "ghp_abcdefghijklmnopqrstuvwxyz0123456789",
+    path: "src/a.ts", line: 1 + (i % 4), quote: ["line1", "new2", "new3", "line3"][i % 4], severity: "nit", title: `n${i}`, body: "ghp_abcdefghijklmnopqrstuvwxyz0123456789",
   }));
   const r = buildReview({ summary: "s", verdict: "ready", findings: many }, DIFF, "abc");
   assert.strictEqual(r.payload.comments.length, MAX_INLINE);

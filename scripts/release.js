@@ -40,4 +40,4 @@ if (!cl.includes("## [Unreleased]")) {
 }
 const date = new Date().toISOString().slice(0, 10);
 fs.writeFileSync(clPath, cl.replace("## [Unreleased]", `## [Unreleased]\n\n## [${next}] - ${date}`));
-console.log(`CHANGELOG.md stamped ${next}. Next: git commit -m "chore(release): v${next}" && git tag v${next}`);
+console.log(`CHANGELOG.md stamped ${next}. Next: git commit -am "chore(release): v${next}" && git push origin main && claude plugin tag --push`);

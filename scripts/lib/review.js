@@ -1,4 +1,4 @@
-const { parseDiff } = require("./diff.js");
+const { parseDiffLines } = require("./diff.js");
 
 const SEVERITIES = ["blocker", "should", "nit"];
 const LABEL = { blocker: "Blocker", should: "Should fix", nit: "Nit" };
@@ -29,24 +29,41 @@ function validate(input, headSha) {
     if (!SEVERITIES.includes(f.severity)) throw new Error(`${at}.severity must be one of ${SEVERITIES.join(", ")}.`);
     if (typeof f.title !== "string" || !f.title) throw new Error(`${at}.title is required.`);
     if (typeof f.body !== "string" || !f.body) throw new Error(`${at}.body is required.`);
+    if (f.quote !== undefined && typeof f.quote !== "string") throw new Error(`${at}.quote must be a string.`);
   });
   return list;
 }
 
 const render = (f) => `**${LABEL[f.severity]}** — ${redact(f.title)}\n\n${redact(f.body)}` + (f.suggestion ? `\n\n\`\`\`suggestion\n${redact(f.suggestion)}\n\`\`\`` : "");
 
+const norm = (s) => String(s).replace(/^\uFEFF/, "").trim().replace(/\s+/g, " ");
+
+// Decide where a finding can be anchored. The reviewer must quote the source line it means; the quote is
+// checked against the diff so a wrong line number can never produce a comment on the wrong line.
+//   - line holds the quote            -> keep the line
+//   - another line holds it (unique)  -> relocate to that line
+//   - otherwise (or no quote)         -> not anchorable, goes to the review body
+function resolveLine(f, fileLines) {
+  if (!fileLines || !f.quote || !norm(f.quote)) return null;
+  const q = norm(f.quote);
+  const at = fileLines.get(f.line);
+  if (at !== undefined && norm(at).includes(q)) return f.line;
+  const hits = [...fileLines].filter(([, text]) => norm(text).includes(q)).map(([n]) => n);
+  return hits.length === 1 ? hits[0] : null;
+}
+
 // Build a GitHub "create review" payload. Event is always COMMENT: the human decides approve/request-changes.
 // Findings whose line is not in the diff (or beyond the inline cap) go into the review body instead.
 function buildReview(input, diffText, headSha) {
   const list = validate(input, headSha);
-  const rightLines = parseDiff(diffText);
+  const diffLines = parseDiffLines(diffText);
   const ordered = [...list].sort((a, b) => SEVERITIES.indexOf(a.severity) - SEVERITIES.indexOf(b.severity));
 
   const inline = [];
   const rest = [];
   for (const f of ordered) {
-    const anchorable = rightLines[f.path] && rightLines[f.path].has(f.line);
-    if (anchorable && inline.length < MAX_INLINE) inline.push(f);
+    const line = resolveLine(f, diffLines[f.path]);
+    if (line !== null && inline.length < MAX_INLINE) inline.push({ ...f, line });
     else rest.push(f);
   }
 

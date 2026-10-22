@@ -1,6 +1,8 @@
-// Parse a unified diff into { "<path>": Set<rightSideLineNumber> }.
-// Only lines present on the RIGHT side of the diff (added or context) can receive inline PR comments.
-function parseDiff(text) {
+// Parse a unified diff.
+//   parseDiffLines(text) -> { "<path>": Map<rightSideLineNumber, lineText> }
+//   parseDiff(text)      -> { "<path>": Set<rightSideLineNumber> }
+// Only lines on the RIGHT (new) side of the diff, added or context, can receive inline PR comments.
+function parseDiffLines(text) {
   const files = {};
   let current = null;
   let right = 0;
@@ -15,7 +17,7 @@ function parseDiff(text) {
         current = null;
       } else {
         const name = p.replace(/^b\//, "");
-        current = files[name] = files[name] || new Set();
+        current = files[name] = files[name] || new Map();
       }
       continue;
     }
@@ -26,14 +28,17 @@ function parseDiff(text) {
       continue;
     }
     if (!current) continue;
-    if (line.startsWith("+")) current.add(right++);
+    if (line.startsWith("+")) current.set(right++, line.slice(1));
     else if (line.startsWith("-") || line.startsWith("\\")) continue;
-    else if (line.startsWith(" ") || line === "") {
-      if (line === "" ) continue;
-      current.add(right++);
-    }
+    else if (line.startsWith(" ")) current.set(right++, line.slice(1));
   }
   return files;
 }
 
-module.exports = { parseDiff };
+function parseDiff(text) {
+  const out = {};
+  for (const [file, lines] of Object.entries(parseDiffLines(text))) out[file] = new Set(lines.keys());
+  return out;
+}
+
+module.exports = { parseDiff, parseDiffLines };

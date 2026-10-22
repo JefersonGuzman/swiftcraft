@@ -5,6 +5,10 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versioning: [S
 
 ## [Unreleased]
 
+### Fixed
+- `update-check` reads the latest GitHub release (falls back to the raw `plugin.json`): the raw CDN is cached for minutes after a release and reported the old version. Release notes are used when the CHANGELOG cannot be loaded.
+- `pr-review`: findings now carry a `quote` of their source line, verified against the diff; a wrong line number (the reviewer used `diff.patch` lines instead of file lines in a real test) is relocated or moved to the review body instead of commenting on the wrong line.
+
 ## [0.3.0] - 2026-10-22
 
 ### Added

@@ -24,12 +24,20 @@ const manifest = JSON.parse(fs.readFileSync(path.join(__dirname, "..", ".claude-
 const installed = manifest.version;
 const repoMatch = String(manifest.repository || "").match(/github\.com\/([\w.-]+\/[\w.-]+?)(?:\.git)?\/?$/);
 const base = process.env.SWIFTCRAFT_UPDATE_BASE || (repoMatch ? `https://raw.githubusercontent.com/${repoMatch[1]}/main` : null);
+// The latest GitHub release is the primary source: raw.githubusercontent.com is cached for minutes after a
+// release and can still show the old version. When SWIFTCRAFT_UPDATE_BASE is set (tests) the API is skipped
+// unless SWIFTCRAFT_UPDATE_API is also set.
+const apiUrl =
+  process.env.SWIFTCRAFT_UPDATE_API ||
+  (!process.env.SWIFTCRAFT_UPDATE_BASE && repoMatch ? `https://api.github.com/repos/${repoMatch[1]}/releases/latest` : null);
+let releaseNotes = "";
 const cacheFile = path.join(process.env.SWIFTCRAFT_CACHE_DIR || os.tmpdir(), "swiftcraft-update-check.json");
 
 function get(url, timeoutMs) {
   const lib = url.startsWith("https:") ? https : http;
   return new Promise((resolve, reject) => {
-    const req = lib.get(url, { timeout: timeoutMs }, (res) => {
+    const headers = { "user-agent": "swiftcraft-update-check", accept: "application/vnd.github+json, application/json, text/plain" };
+    const req = lib.get(url, { timeout: timeoutMs, headers }, (res) => {
       if (res.statusCode !== 200) {
         res.resume();
         return reject(new Error(`HTTP ${res.statusCode}`));
@@ -58,6 +66,19 @@ const writeCache = (latest) => {
 };
 
 async function latestVersion(timeoutMs) {
+  if (apiUrl) {
+    try {
+      const rel = JSON.parse(await get(apiUrl, timeoutMs));
+      const m = String(rel.tag_name || "").match(/(\d+\.\d+\.\d+)$/);
+      if (m) {
+        if (typeof rel.body === "string") releaseNotes = rel.body.trim();
+        return m[1];
+      }
+    } catch {
+      // rate limit, no release yet or offline: fall back to the raw plugin.json below
+    }
+  }
+  if (!base) throw new Error("no repository configured");
   const body = await get(`${base}/.claude-plugin/plugin.json`, timeoutMs);
   const v = JSON.parse(body).version;
   compareVersions(v, v); // validates the format
@@ -65,7 +86,7 @@ async function latestVersion(timeoutMs) {
 }
 
 async function main() {
-  if (!base) {
+  if (!base && !apiUrl) {
     if (notice) return;
     console.error("Could not determine the repository: add a GitHub `repository` URL to .claude-plugin/plugin.json.");
     process.exit(1);
@@ -105,12 +126,14 @@ async function main() {
   if (cmp === 0) return console.log("swiftcraft is up to date.");
   if (cmp < 0) return console.log("The installed version is newer than the published one (development build?). Nothing to update.");
 
+  let notes = "";
   try {
-    const notes = changelogBetween(await get(`${base}/CHANGELOG.md`, 8000), installed, latest);
-    if (notes) console.log(`\nWhat you get:\n\n${notes}`);
+    if (base) notes = changelogBetween(await get(`${base}/CHANGELOG.md`, 8000), installed, latest);
   } catch {
-    console.log("\n(Could not load the CHANGELOG.)");
+    // fall back to the release notes below
   }
+  notes = notes || releaseNotes;
+  console.log(notes ? `\nWhat you get:\n\n${notes}` : "\n(Could not load the CHANGELOG.)");
   console.log(
     `\nTo update, run in a terminal:\n  claude plugin marketplace update swiftcraft\n  claude plugin update swiftcraft@swiftcraft\n` +
       "Then restart Claude Code to apply it."

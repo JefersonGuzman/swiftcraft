@@ -36,6 +36,7 @@ Return **only** JSON, no prose, in this exact shape:
     {
       "path": "src/orders/domain/order.ts",
       "line": 42,
+      "quote": "the exact text of that source line, copied from the diff without the leading + or space",
       "severity": "blocker | should | nit",
       "title": "Short, specific title",
       "body": "What is wrong, why it matters, how to fix it.",
@@ -45,4 +46,8 @@ Return **only** JSON, no prose, in this exact shape:
 }
 ```
 
-Rules: `line` is an integer on the new (right) side of the diff; `severity` is exactly `blocker`, `should` or `nit`; never include secrets or tokens you saw in the code; never include an approval or request-changes decision, the human decides that.
+### Line numbers (common mistake)
+
+`line` is the line number **in the new version of the file**, not the line number inside `diff.patch`. Compute it from the hunk header `@@ -a,b +c,d @@`: the first line after the header (context ` ` or added `+`) is line `c`; count every context and `+` line, skip `-` lines. For a new file `@@ -0,0 +1,N @@` the first `+` line is line 1. Always fill `quote` with the exact text of that line: the publisher checks it against the diff and moves anything it cannot verify into the review body instead of commenting on the wrong line.
+
+Rules: `severity` is exactly `blocker`, `should` or `nit`; never include secrets or tokens you saw in the code; never include an approval or request-changes decision, the human decides that.
