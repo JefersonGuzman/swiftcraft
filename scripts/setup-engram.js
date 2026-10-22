@@ -13,6 +13,10 @@ const PLUGIN = "engram@engram";
 const run = (cmd, args) => spawnSync(cmd, args, { encoding: "utf8", shell: process.platform === "win32" });
 const ok = (label, good, hint = "") => console.log(`${good ? "OK  " : "MISS"} ${label}${good || !hint ? "" : " -> " + hint}`);
 
+// 0. Node.js >= 18 (the hooks and helper scripts are Node scripts)
+const nodeMajor = Number(process.versions.node.split(".")[0]);
+ok(`node ${process.versions.node}`, nodeMajor >= 18, "swiftcraft hooks need Node.js 18 or newer: https://nodejs.org");
+
 // 1. engram binary
 const bin = run("engram", ["version"]);
 const hasBin = bin.status === 0;

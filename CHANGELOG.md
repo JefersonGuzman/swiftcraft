@@ -1,4 +1,4 @@
-﻿# Changelog
+# Changelog
 
 All notable changes to this project are documented here.
 Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versioning: [SemVer](https://semver.org/).
@@ -6,16 +6,16 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versioning: [S
 ## [Unreleased]
 
 ### Added
-- `/swiftcraft:pr-review`: PR review against project constitution/specs/architecture with a dry run and confirmed posting (`pr-review` skill, read-only `pr-reviewer` agent, `scripts/pr-fetch.js`, `scripts/pr-post.js`).
-
+- Plugin icon, `SECURITY.md`, issue and PR templates, README screenshot and requirements.
+- `/swiftcraft:setup` checks the Node.js version (18+) first.
+- `/swiftcraft:pr-review`: PR review against the project constitution/specs/architecture with a dry run and confirmed posting (`pr-review` skill, read-only `pr-reviewer` agent, `scripts/pr-fetch.js`, `scripts/pr-post.js`).
 - `/swiftcraft:update` and a once-a-day `SessionStart` update notice (`scripts/update-check.js`, opt out with `SWIFTCRAFT_NO_UPDATE_CHECK=1`).
 - Release automation: `.github/workflows/release.yml` publishes a GitHub release from the CHANGELOG when a `swiftcraft--vX.Y.Z` tag is pushed; `scripts/changelog-notes.js`.
-- `repository`/`homepage` in the manifests and a marketplace description (`claude plugin validate` passes).
+- `repository`/`homepage` in the manifests and a marketplace description.
 
 ### Fixed
-- Memory nudge ignores edits made by subagents (they carry `agent_id`), which stops spurious nudges while a subagent works.
-- pr-fetch.js ignored its first positional argument when --repo was absent, so /swiftcraft:pr-review 42 failed at step 1; arguments are now parsed in scripts/lib/pr-args.js with tests.
-- Memory nudge: writing fallback memory files now counts as a save, which stops the repeated nudge.
+- `pr-fetch.js` ignored its first positional argument when `--repo` was absent, so `/swiftcraft:pr-review 42` failed at step 1; arguments are now parsed in `scripts/lib/pr-args.js` with tests.
+- Memory nudge: writing fallback memory files counts as a save, and edits made by subagents (`agent_id`) no longer count toward the parent session.
 
 ## [0.2.0] - 2026-10-22
 

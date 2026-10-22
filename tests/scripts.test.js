@@ -33,6 +33,21 @@ test("export-agents writes Cursor/Gemini/Copilot files and keeps existing ones",
   assert.match(fs.readFileSync(path.join(dir, "GEMINI.md"), "utf8"), /AGENTS\.md/);
 });
 
+test("setup script reports the Node.js version first and exits 0 without --apply", () => {
+  const r = spawnSync("node", [path.join(root, "scripts", "setup-engram.js")], { encoding: "utf8", timeout: 60000 });
+  assert.strictEqual(r.status, 0, r.stderr);
+  assert.match(r.stdout.split("\n")[0], /^OK\s+node \d+\.\d+\.\d+/);
+});
+
+test("plugin icon is a square PNG of at least 512 px", () => {
+  const buf = fs.readFileSync(path.join(root, ".claude-plugin", "icon.png"));
+  assert.strictEqual(buf.subarray(1, 4).toString(), "PNG");
+  const w = buf.readUInt32BE(16);
+  const h = buf.readUInt32BE(20);
+  assert.ok(w === h && w >= 512 && w <= 2048, `icon is ${w}x${h}`);
+  assert.ok(buf.length < 2 * 1024 * 1024);
+});
+
 test("stack templates exist with the required sections", () => {
   for (const s of ["nextjs", "node-api", "python-fastapi"]) {
     const t = fs.readFileSync(path.join(root, "templates", "stacks", s, "STACK.md"), "utf8");

@@ -1,19 +1,31 @@
 # swiftcraft — structured vibe-coding harness
 
+<p align="center"><img src=".claude-plugin/icon.png" alt="swiftcraft icon: a yellow lightning bolt on an indigo rounded square" width="96"></p>
+
 A small Claude Code plugin that keeps vibe coding fast **and** organized: spec first, architecture guardrails, test-first loop, written decisions, fresh-context review.
 
-Stack-agnostic. Lean on purpose: 11 skills, 4 agents, 11 commands, 6 hooks.
+Stack-agnostic. Lean on purpose: 11 skills, 4 agents, 11 commands, 6 hooks, about 950 tokens of always-on context (`claude plugin details swiftcraft@swiftcraft`).
+
+![The swiftcraft visual guide: "Vibe coding rápido, pero con oficio."](docs/img/guide-hero.jpg)
+
+## Requirements
+
+- [Claude Code](https://claude.com/claude-code) 2.x
+- **Node.js 18 or newer** (`node --version`). The hooks and helper scripts are plain Node scripts that work on Windows, macOS and Linux. Without Node the hooks do not run (they fail without blocking you).
+- Git. Optional: GitHub CLI (`gh`) for `/swiftcraft:pr-review`; Engram and RTK companions (`/swiftcraft:setup`).
 
 ## Install
 
+From your terminal:
+
 ```
-/plugin marketplace add JefersonGuzman/swiftcraft
-/plugin install swiftcraft@swiftcraft
+claude plugin marketplace add JefersonGuzman/swiftcraft
+claude plugin install swiftcraft@swiftcraft
 ```
 
-Local test before publishing: `claude --plugin-dir ./swiftcraft`.
+Or inside Claude Code: `/plugin marketplace add JefersonGuzman/swiftcraft` then `/plugin install swiftcraft@swiftcraft`. Restart Claude Code, type `/swiftcraft:` and you should see the command list.
 
-Requires Node.js 18+ (hooks are plain Node scripts, work on Windows/macOS/Linux).
+Try it without installing: `claude --plugin-dir ./swiftcraft` (after `git clone https://github.com/JefersonGuzman/swiftcraft.git`).
 
 ## Updating
 
