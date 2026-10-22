@@ -5,6 +5,8 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versioning: [S
 
 ## [Unreleased]
 
+## [0.5.0] - 2026-10-22
+
 ### Breaking
 - The spec-driven flow is replaced by **ODD (Organic Driven Development)**. `/swiftcraft:spec`, `/swiftcraft:plan` and the `spec-first` skill are removed; per-feature `specs/NNN-<slug>/{spec,plan,tasks}.md` is replaced by one feature document `odd/tasks/<feature-name>.md` (`## Specs` with `S#`, `## Tasks` with `T#`, `## Log` with `L1`). Existing `specs/` folders are not read any more: move what you still need into a feature document, or delete them.
 
