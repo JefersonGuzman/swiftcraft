@@ -108,6 +108,18 @@ test("memory nudge: blocks once after enough edits, not twice, resets after save
   assert.strictEqual(JSON.parse(run("memory-nudge.js", { session_id: sid }).stdout).decision, "block");
 });
 
+test("memory nudge: writing fallback memory files counts as a save", () => {
+  const sid = `w${Date.now()}`;
+  for (let i = 0; i < 4; i++) run("memory-track.js", { session_id: sid, tool_name: "Write", tool_input: { file_path: "/p/src/a.ts" } });
+  run("memory-track.js", { session_id: sid, tool_name: "Write", tool_input: { file_path: "C:\\Users\\u\\.claude\\projects\\x\\memory\\note.md" } });
+  assert.strictEqual(run("memory-nudge.js", { session_id: sid }).stdout, "");
+
+  const sid2 = `x${Date.now()}`;
+  for (let i = 0; i < 4; i++) run("memory-track.js", { session_id: sid2, tool_name: "Edit", tool_input: { file_path: "/p/a.ts" } });
+  run("memory-track.js", { session_id: sid2, tool_name: "Write", tool_input: { file_path: "/p/docs/memory/INDEX.md" } });
+  assert.strictEqual(run("memory-nudge.js", { session_id: sid2 }).stdout, "");
+});
+
 test("memory nudge: respects stop_hook_active, threshold and opt-out", () => {
   const sid = `u${Date.now()}`;
   for (let i = 0; i < 5; i++) run("memory-track.js", { session_id: sid, tool_name: "Write" });

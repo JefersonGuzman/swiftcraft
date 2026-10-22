@@ -21,7 +21,10 @@ process.stdin.on("end", () => {
   } catch {}
 
   const tool = String(input.tool_name || "");
-  if (/mem_(save|update|session_summary)$/.test(tool)) {
+  const target = String((input.tool_input || {}).file_path || "").replace(/\\/g, "/");
+  // File-based fallback memory (docs/memory/ or the agent's own memory dir) counts as a save.
+  const isMemoryFile = /(^|\/)docs\/memory\//.test(target) || /\/\.claude\/projects\/[^/]+\/memory\//.test(target);
+  if (/mem_(save|update|session_summary)$/.test(tool) || (/^(Write|Edit|MultiEdit)$/.test(tool) && isMemoryFile)) {
     st.edits = 0;
     st.nudgedAt = 0;
   } else if (/^(Write|Edit|MultiEdit)$/.test(tool)) {
