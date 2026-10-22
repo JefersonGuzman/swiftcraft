@@ -1,0 +1,14 @@
+{
+  "name": "swiftcraft",
+  "version": "0.2.0",
+  "private": true,
+  "description": "Structured vibe-coding harness plugin for Claude Code (also usable from Codex via .codex-plugin).",
+  "license": "MIT",
+  "scripts": {
+    "test": "node --test",
+    "release": "node scripts/release.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

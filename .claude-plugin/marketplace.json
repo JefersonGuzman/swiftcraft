@@ -1,0 +1,11 @@
+{
+  "name": "swiftcraft",
+  "owner": { "name": "lozano" },
+  "plugins": [
+    {
+      "name": "swiftcraft",
+      "source": "./",
+      "description": "Structured vibe-coding harness: spec-first, architecture guardrails, TDD, ADRs, review gate, project scaffold."
+    }
+  ]
+}
