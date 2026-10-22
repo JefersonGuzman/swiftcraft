@@ -5,6 +5,8 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versioning: [S
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-10-22
+
 ### Added
 - Plugin icon, `SECURITY.md`, issue and PR templates, README screenshot and requirements.
 - `/swiftcraft:setup` checks the Node.js version (18+) first.
