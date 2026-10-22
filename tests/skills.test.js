@@ -99,6 +99,20 @@ test("no leftovers of the old spec/plan/tasks files flow in the plugin", () => {
   }
 });
 
+test("manifest and marketplace descriptions describe the ODD workflow, not the old spec flow", () => {
+  const json = (...p) => JSON.parse(read(...p));
+  const descriptions = [
+    json(".claude-plugin", "plugin.json").description,
+    json(".codex-plugin", "plugin.json").description,
+    json(".claude-plugin", "marketplace.json").description,
+    json(".claude-plugin", "marketplace.json").plugins[0].description,
+  ];
+  for (const d of descriptions) {
+    assert.doesNotMatch(d, /spec[- ]first/i, `stale description: ${d}`);
+    assert.match(d, /ODD/, `description should mention ODD: ${d}`);
+  }
+});
+
 test("the repository never names the project this workflow was studied from", () => {
   // built from pieces so that this file does not contain the names it forbids
   const names = [["gentle", "ai"], ["gentle", "pi"], ["gentleman", "ai"]].map(([a, b]) => `${a}[-_ ]?${b}`);

@@ -1,7 +1,7 @@
 {
   "name": "swiftcraft",
   "version": "0.5.0",
-  "description": "Structured vibe-coding harness: spec-first workflow, architecture guardrails, TDD loop, ADRs, review gate and project scaffold.",
+  "description": "Structured vibe-coding harness: ODD workflow, architecture guardrails, TDD loop, ADRs, review gate and project scaffold.",
   "author": {
     "name": "lozano"
   },
