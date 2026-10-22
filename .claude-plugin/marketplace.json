@@ -1,6 +1,9 @@
 {
   "name": "swiftcraft",
-  "owner": { "name": "lozano" },
+  "description": "swiftcraft: structured vibe-coding harness. Spec-first workflow, architecture guardrails, TDD, memory, PR review.",
+  "owner": {
+    "name": "lozano"
+  },
   "plugins": [
     {
       "name": "swiftcraft",

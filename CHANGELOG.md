@@ -8,7 +8,12 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versioning: [S
 ### Added
 - `/swiftcraft:pr-review`: PR review against project constitution/specs/architecture with a dry run and confirmed posting (`pr-review` skill, read-only `pr-reviewer` agent, `scripts/pr-fetch.js`, `scripts/pr-post.js`).
 
+- `/swiftcraft:update` and a once-a-day `SessionStart` update notice (`scripts/update-check.js`, opt out with `SWIFTCRAFT_NO_UPDATE_CHECK=1`).
+- Release automation: `.github/workflows/release.yml` publishes a GitHub release from the CHANGELOG when a `swiftcraft--vX.Y.Z` tag is pushed; `scripts/changelog-notes.js`.
+- `repository`/`homepage` in the manifests and a marketplace description (`claude plugin validate` passes).
+
 ### Fixed
+- Memory nudge ignores edits made by subagents (they carry `agent_id`), which stops spurious nudges while a subagent works.
 - pr-fetch.js ignored its first positional argument when --repo was absent, so /swiftcraft:pr-review 42 failed at step 1; arguments are now parsed in scripts/lib/pr-args.js with tests.
 - Memory nudge: writing fallback memory files now counts as a save, which stops the repeated nudge.
 

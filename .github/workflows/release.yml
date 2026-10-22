@@ -1,0 +1,31 @@
+name: release
+on:
+  push:
+    tags:
+      - "swiftcraft--v*"
+permissions:
+  contents: write
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm test
+      - name: Check the tag matches the plugin version
+        run: |
+          TAG_VERSION="${GITHUB_REF_NAME#swiftcraft--v}"
+          FILE_VERSION="$(node -p "require('./.claude-plugin/plugin.json').version")"
+          if [ "$TAG_VERSION" != "$FILE_VERSION" ]; then
+            echo "Tag $TAG_VERSION does not match plugin.json $FILE_VERSION" >&2
+            exit 1
+          fi
+          echo "VERSION=$TAG_VERSION" >> "$GITHUB_ENV"
+      - name: Build release notes from CHANGELOG
+        run: node scripts/changelog-notes.js "$VERSION" > notes.md
+      - name: Create GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create "$GITHUB_REF_NAME" --title "swiftcraft $VERSION" --notes-file notes.md

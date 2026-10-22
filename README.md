@@ -2,7 +2,7 @@
 
 A small Claude Code plugin that keeps vibe coding fast **and** organized: spec first, architecture guardrails, test-first loop, written decisions, fresh-context review.
 
-Stack-agnostic. Lean on purpose: 11 skills, 4 agents, 10 commands, 5 hooks.
+Stack-agnostic. Lean on purpose: 11 skills, 4 agents, 11 commands, 6 hooks.
 
 ## Install
 
@@ -14,6 +14,19 @@ Stack-agnostic. Lean on purpose: 11 skills, 4 agents, 10 commands, 5 hooks.
 Local test before publishing: `claude --plugin-dir ./swiftcraft`.
 
 Requires Node.js 18+ (hooks are plain Node scripts, work on Windows/macOS/Linux).
+
+## Updating
+
+Inside Claude Code run `/swiftcraft:update`: it shows your version, the latest one, what changed (from this repo's `CHANGELOG.md`) and the two commands to run in a terminal:
+
+```
+claude plugin marketplace update swiftcraft
+claude plugin update swiftcraft@swiftcraft
+```
+
+Restart Claude Code afterwards. The command never updates anything by itself. A short notice at session start (at most once every 24 h, 2.5 s timeout, silent when offline) tells you when a newer version exists; set `SWIFTCRAFT_NO_UPDATE_CHECK=1` to disable it. Only the public `plugin.json` and `CHANGELOG.md` of this repository are fetched; nothing about you or your project is sent.
+
+If you installed with `--plugin-dir`, update by running `git pull` in the harness folder.
 
 ## Workflow
 
@@ -28,6 +41,7 @@ Requires Node.js 18+ (hooks are plain Node scripts, work on Windows/macOS/Linux)
 | — | `/swiftcraft:remember <text>` | Save to project memory |
 | — | `/swiftcraft:setup` | Check/install companions (Engram, RTK) |
 | — | `/swiftcraft:export` | Generate Cursor / Gemini CLI / Copilot rules from AGENTS.md |
+| — | `/swiftcraft:update` | Check for a newer version, see what changed, get the update commands |
 | — | `/swiftcraft:pr-review <n\|url>` | Review a GitHub PR against your constitution/specs/architecture; posts comments only after you confirm |
 
 ## What's inside
@@ -38,6 +52,7 @@ Requires Node.js 18+ (hooks are plain Node scripts, work on Windows/macOS/Linux)
   - `SessionStart`: injects `docs/constitution.md`; after compaction restores the active spec's open tasks.
   - `PreToolUse`: blocks writes to `.env`, keys and certificates.
   - `PostToolUse` `arch-lint`: flags framework/outer-layer imports inside `domain/` and `application/` (override with `docs/arch-rules.json`).
+  - `SessionStart` update notice: at most once a day it compares your version with the one on GitHub and tells you if a newer one exists (opt out: `SWIFTCRAFT_NO_UPDATE_CHECK=1`).
   - `Stop` memory nudge: after 3+ file edits with nothing saved, asks once for `mem_save` + `mem_session_summary` (loop-safe; opt out with `SWIFTCRAFT_NO_NUDGE=1`, tune with `SWIFTCRAFT_NUDGE_EDITS`).
 - **Stack templates** (`templates/stacks/`): Next.js, Node API, Python + FastAPI. `/swiftcraft:init` picks one.
 - **Template** (`templates/project/`): `AGENTS.md`, `CLAUDE.md`, `docs/`, `specs/_template/`, `.env.example`, `.gitignore`.

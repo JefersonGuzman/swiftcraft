@@ -14,6 +14,8 @@ process.stdin.on("end", () => {
   } catch {
     process.exit(0);
   }
+  // Tool calls made by subagents carry agent_id; they must not count toward the parent's nudge.
+  if (input.agent_id) process.exit(0);
   const file = path.join(os.tmpdir(), `swiftcraft-${String(input.session_id || "nosession").replace(/[^\w-]/g, "")}.json`);
   let st = { edits: 0, nudgedAt: 0 };
   try {

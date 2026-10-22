@@ -120,6 +120,14 @@ test("memory nudge: writing fallback memory files counts as a save", () => {
   assert.strictEqual(run("memory-nudge.js", { session_id: sid2 }).stdout, "");
 });
 
+test("memory nudge: edits made by subagents do not count toward the parent session", () => {
+  const sid = `s${Date.now()}`;
+  for (let i = 0; i < 6; i++) run("memory-track.js", { session_id: sid, tool_name: "Edit", agent_id: "sub-1", agent_type: "claude" });
+  assert.strictEqual(run("memory-nudge.js", { session_id: sid }).stdout, "");
+  for (let i = 0; i < 3; i++) run("memory-track.js", { session_id: sid, tool_name: "Edit" });
+  assert.strictEqual(JSON.parse(run("memory-nudge.js", { session_id: sid }).stdout).decision, "block");
+});
+
 test("memory nudge: respects stop_hook_active, threshold and opt-out", () => {
   const sid = `u${Date.now()}`;
   for (let i = 0; i < 5; i++) run("memory-track.js", { session_id: sid, tool_name: "Write" });
