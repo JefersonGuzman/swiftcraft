@@ -1,6 +1,6 @@
 ---
 name: project-start
-description: Scaffold a new project with the swiftcraft structure (constitution, architecture, ADRs, specs). Use when starting a new platform/app/repo or adopting the harness in an existing one.
+description: Scaffold a new project with the swiftcraft structure (constitution, architecture, ADRs, feature documents). Use when starting a new platform/app/repo or adopting the harness in an existing one.
 ---
 
 # project-start
@@ -16,7 +16,7 @@ Goal: a new project that is structured from commit zero.
 4. **Create `.env.example`** with placeholders only (it is not in the template).
 5. **Create the source skeleton** per `docs/architecture.md` for the first feature only — no empty speculative folders.
 6. **Write ADR 0001** recording the stack and architecture choice (use skill `adr`).
-7. **Stop** and show the tree plus the next step: `/swiftcraft:spec <first feature>`.
+7. **Stop** and show the tree plus the next step: `/swiftcraft:odd <first feature>`.
 
 ## Rules
 

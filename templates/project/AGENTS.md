@@ -8,12 +8,12 @@ Agent-neutral rules (Claude Code, Codex, Cursor, OpenCode…). Details: `docs/co
 - Lint: `{{LINT_CMD}}`
 - Build: `{{BUILD_CMD}}`
 
-## Workflow
+## Workflow (ODD)
 
-1. Size first. **Small** (understood, low risk, resumable from the diff): test first, no spec files. **Large**: `specs/NNN-<slug>/spec.md` → `plan.md` → `tasks.md`, quoting the user's exact words. Never size by file count.
+1. Size first. **Small** (understood, low risk, resumable from the diff): straight to a test, no document. **Large**: a feature document `odd/tasks/<feature-name>.md` (`## Specs`, `## Tasks`, `## Log`) quoting the user's exact words. Never size by file count. Explain, review and proposal requests stay read-only.
 2. One task at a time, tests first, then stop and report real output.
 3. Close every code change with `Risk: none` or `Risk: item N (reason)`; any item means `/swiftcraft:review` first. Review the diff before committing. Conventional Commits, no AI attribution.
-4. Record durable decisions as ADRs in `docs/adr/`.
+4. Record durable decisions as ADRs in `docs/adr/`. Resume with `/swiftcraft:status`.
 
 ## Architecture in one line
 

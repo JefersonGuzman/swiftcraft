@@ -2,9 +2,9 @@
 
 <p align="center"><img src=".claude-plugin/icon.png" alt="swiftcraft icon: a yellow lightning bolt on an indigo rounded square" width="96"></p>
 
-A small Claude Code plugin that keeps vibe coding fast **and** organized: spec first, architecture guardrails, test-first loop, written decisions, fresh-context review.
+A small Claude Code plugin that keeps vibe coding fast **and** organized: size-first workflow (ODD), architecture guardrails, test-first loop, written decisions, fresh-context review.
 
-Stack-agnostic. Lean on purpose: 11 skills, 4 agents, 11 commands, 6 hooks, about 950 tokens of always-on context (`claude plugin details swiftcraft@swiftcraft`).
+Stack-agnostic. Lean on purpose: 11 skills, 4 agents, 11 commands, 7 hooks, about 950 tokens of always-on context (`claude plugin details swiftcraft@swiftcraft`).
 
 ![The swiftcraft visual guide: "Vibe coding rápido, pero con oficio."](docs/img/guide-hero.jpg)
 
@@ -44,30 +44,43 @@ If you installed with `--plugin-dir`, update by running `git pull` in the harnes
 
 | Step | Command | Result |
 |------|---------|--------|
-| 0 | `/swiftcraft:init` | Project scaffold: constitution, architecture, ADRs, spec templates |
-| 1 | `/swiftcraft:spec <idea>` | Sizes the change first: small = straight to a test; large = `specs/NNN-slug/spec.md` (what/why, your exact words) |
-| 2 | `/swiftcraft:plan` | `plan.md` + `tasks.md` |
-| 3 | `/swiftcraft:build` | One task, RED → GREEN → REFACTOR, then stop |
-| 4 | `/swiftcraft:review` | Fresh-context diff review, verdict |
+| 0 | `/swiftcraft:init` | Project scaffold: constitution, architecture, ADRs, feature-document template |
+| 1 | `/swiftcraft:odd <request>` | Runs the ODD protocol: stays read-only unless you ask for a change, explores, **sizes the work** (small = straight to a test, no paperwork; large = a feature document `odd/tasks/<feature>.md` with your exact words), then implements task by task |
+| 2 | `/swiftcraft:build` | One task, RED → GREEN → REFACTOR, then stop, with a Risk line |
+| 3 | `/swiftcraft:review` | Fresh-context diff review, verdict |
+| — | `/swiftcraft:status` | Where the active feature stands: progress, next task, pending decisions |
 | — | `/swiftcraft:adr <topic>` | Decision record in `docs/adr/` |
 | — | `/swiftcraft:remember <text>` | Save to project memory |
 | — | `/swiftcraft:setup` | Check/install companions (Engram, RTK) |
 | — | `/swiftcraft:export` | Generate Cursor / Gemini CLI / Copilot rules from AGENTS.md |
 | — | `/swiftcraft:update` | Check for a newer version, see what changed, get the update commands |
-| — | `/swiftcraft:pr-review <n\|url>` | Review a GitHub PR against your constitution/specs/architecture; posts comments only after you confirm |
+| — | `/swiftcraft:pr-review <n\|url>` | Review a GitHub PR against your constitution, feature documents and architecture; posts comments only after you confirm |
 
 ## What's inside
 
-- **Skills**: `project-start`, `architecture-guard`, `spec-first`, `tdd-loop`, `adr`, `review-gate`, `context-hygiene`, `memory`, `token-saver`, `ui-design`, `pr-review`.
+- **Skills**: `project-start`, `architecture-guard`, `odd`, `tdd-loop`, `adr`, `review-gate`, `context-hygiene`, `memory`, `token-saver`, `ui-design`, `pr-review`.
 - **Agents**: `architect` (design), `reviewer` (diff review), `explorer` (compact code maps), `pr-reviewer` (PR findings as JSON). All read-only; `pr-reviewer` has no shell at all.
 - **Hooks**
-  - `SessionStart`: injects `docs/constitution.md`; after compaction restores the active spec's open tasks.
+  - `SessionStart`: injects `docs/constitution.md`; shows the active feature document (progress, next task) and restores its open tasks after compaction.
   - `PreToolUse`: blocks writes to `.env`, keys and certificates.
+  - `PostToolUse` `odd-lint`: validates a feature document whenever `odd/tasks/<feature>.md` is written (every task links a spec, every spec is covered, `L1` is the original request, ticked tasks record a commit or evidence) and feeds problems back.
   - `PostToolUse` `arch-lint`: flags framework/outer-layer imports inside `domain/` and `application/` (override with `docs/arch-rules.json`).
   - `SessionStart` update notice: at most once a day it compares your version with the one on GitHub and tells you if a newer one exists (opt out: `SWIFTCRAFT_NO_UPDATE_CHECK=1`).
   - `Stop` memory nudge: after 3+ file edits with nothing saved, asks once for `mem_save` + `mem_session_summary` (loop-safe; opt out with `SWIFTCRAFT_NO_NUDGE=1`, tune with `SWIFTCRAFT_NUDGE_EDITS`).
 - **Stack templates** (`templates/stacks/`): Next.js, Node API, Python + FastAPI. `/swiftcraft:init` picks one.
-- **Template** (`templates/project/`): `AGENTS.md`, `CLAUDE.md`, `docs/`, `specs/_template/`, `.env.example`, `.gitignore`.
+- **Template** (`templates/project/`): `AGENTS.md`, `CLAUDE.md`, `docs/`, `odd/tasks/_template.md`, `.env.example`, `.gitignore`.
+
+## ODD in one minute
+
+1. **Authorize**: explain / review / propose requests stay read-only; only an explicit request changes files.
+2. **Explore** the code in proportion to the request.
+3. **Resolve uncertainty**: one focused question, only for a real decision.
+4. **Classify**: *small* (understood, contained risk, resumable from the diff) needs no document; *large* does. Never sized by file count.
+5. **Track**: large work gets `odd/tasks/<feature>.md` before the first edit: `## Specs` (`S#`, your words verbatim), `## Tasks` (`T#` linked to specs, route, commit), `## Log` (`L1` = your original request).
+6. **Implement** one task at a time, tests first; delegate only for a named reason (mapping, parallel units, context, verification).
+7. **Close** with the verified outcome, failed or skipped checks and a `Risk: none | item N` line; any named risk means `/swiftcraft:review` first.
+
+Check a document yourself with `node scripts/odd.js check odd/tasks/<feature>.md`; resume with `/swiftcraft:status`.
 
 ## Memory (Engram)
 

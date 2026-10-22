@@ -1,10 +1,11 @@
 #!/usr/bin/env node
-// SessionStart: inject the project constitution + active spec pointer as context.
+// SessionStart: inject the project constitution and the active ODD feature document as context.
 // Stdout of a SessionStart hook is added to the model context.
-// `--compact` (matcher "compact"): after compaction, re-inject only the working state
-// (open tasks) — Engram's own plugin handles memory recovery.
+// `--compact` (matcher "compact"): after compaction, re-inject only the working state (the open tasks of the
+// active feature document); the memory plugin handles memory recovery.
 const fs = require("fs");
 const path = require("path");
+const { findActiveDoc } = require("../../scripts/lib/odd.js");
 
 const compact = process.argv.includes("--compact");
 const cwd = process.cwd();
@@ -13,52 +14,37 @@ const MEMORY_HINT =
   "Memory: use the `memory` skill (Engram mem_* tools; call mem_current_project first). " +
   "Save decisions, fixes and discoveries proactively; run mem_session_summary before finishing.\n";
 
-function latestSpec() {
-  const specsDir = path.join(cwd, "specs");
-  if (!fs.existsSync(specsDir)) return null;
-  const dirs = fs
-    .readdirSync(specsDir, { withFileTypes: true })
-    .filter((d) => d.isDirectory() && !d.name.startsWith("_"))
-    .map((d) => d.name)
-    .sort();
-  return dirs.length ? dirs[dirs.length - 1] : null;
-}
+const active = findActiveDoc(cwd);
 
-function openTasks(spec) {
-  try {
-    return fs
-      .readFileSync(path.join(cwd, "specs", spec, "tasks.md"), "utf8")
-      .split(/\r?\n/)
-      .filter((l) => /^\s*- \[ \]/.test(l))
-      .slice(0, 8);
-  } catch {
-    return [];
-  }
+function activeSummary() {
+  if (!active) return "";
+  const s = active.status;
+  const next = s.next ? `; next: ${s.next.id} (${s.next.specs.join(",")}) ${s.next.outcome}` : "; all tasks ticked";
+  return `Active feature: ${active.rel} — ${s.done}/${s.total} tasks done${next}. Resume with /swiftcraft:status.\n`;
 }
-
-const spec = latestSpec();
 
 if (compact) {
-  if (!spec) process.exit(0);
-  const tasks = openTasks(spec);
+  if (!active) process.exit(0);
+  const lines = active.status.open.slice(0, 8).map((t) => t.raw);
   process.stdout.write(
-    `# swiftcraft — context restored after compaction\nActive spec: specs/${spec}/\n` +
-      (tasks.length ? `Open tasks:\n${tasks.join("\n")}\n` : "No open tasks.\n")
+    `# swiftcraft — context restored after compaction\n${activeSummary()}` +
+      (lines.length ? `Open tasks:\n${lines.join("\n")}\n` : "No open tasks.\n") +
+      (active.status.needsDecision.length ? `Needs your decision:\n${active.status.needsDecision.map((d) => `- ${d}`).join("\n")}\n` : "")
   );
   process.exit(0);
 }
 
 if (!fs.existsSync(constitution)) {
-  process.stdout.write(MEMORY_HINT);
+  process.stdout.write(MEMORY_HINT + activeSummary());
   process.exit(0);
 }
 
 const MAX = 4000;
 let text = fs.readFileSync(constitution, "utf8");
 if (text.length > MAX) text = text.slice(0, MAX) + "\n…(truncated)";
-const active = spec ? `\nLatest spec folder: specs/${spec}/` : "";
 
 process.stdout.write(
-  `# swiftcraft — project rules (docs/constitution.md)\n${text}${active}\n` +
-    `\nWorkflow: /swiftcraft:spec -> /swiftcraft:plan -> /swiftcraft:build (one task, tests first) -> /swiftcraft:review. Record decisions with /swiftcraft:adr.\n${MEMORY_HINT}`
+  `# swiftcraft — project rules (docs/constitution.md)\n${text}\n${activeSummary()}` +
+    `\nWorkflow (ODD): /swiftcraft:odd <request> sizes the work first; small = straight to a test, large = feature document in odd/tasks/. ` +
+    `/swiftcraft:build one task, /swiftcraft:review, /swiftcraft:status to resume. Record decisions with /swiftcraft:adr.\n${MEMORY_HINT}`
 );

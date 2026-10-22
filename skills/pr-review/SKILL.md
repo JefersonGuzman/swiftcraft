@@ -1,6 +1,6 @@
 ---
 name: pr-review
-description: Review a GitHub pull request against the project's constitution, specs and architecture, and optionally post the findings as PR comments after the user confirms. Use when the user gives a PR number or URL, or asks for a PR review with comments.
+description: Review a GitHub pull request against the project's constitution, feature documents and architecture, and optionally post the findings as PR comments after the user confirms. Use when the user gives a PR number or URL, or asks for a PR review with comments.
 ---
 
 # pr-review
@@ -10,7 +10,7 @@ Human-in-the-loop PR review. Nothing is published without an explicit "yes" from
 ## Prerequisites
 
 - GitHub CLI installed and authenticated (`gh auth status`). If not, stop and tell the user.
-- Run from a checkout of the PR's repository so the reviewer can read `docs/constitution.md`, `docs/architecture.md`, `specs/` and ADRs. If the PR belongs to another repo, say the review will lack project context.
+- Run from a checkout of the PR's repository so the reviewer can read `docs/constitution.md`, `docs/architecture.md`, the feature documents in `odd/tasks/` and ADRs. If the PR belongs to another repo, say the review will lack project context.
 
 ## Process
 

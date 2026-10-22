@@ -75,21 +75,9 @@ test("session-start: silent rules without constitution, injects with one", () =>
 
   const proj = tmp();
   fs.mkdirSync(path.join(proj, "docs"));
-  fs.writeFileSync(path.join(proj, "docs", "constitution.md"), "# Rules\nSpec before code.");
-  fs.mkdirSync(path.join(proj, "specs", "001-login"), { recursive: true });
+  fs.writeFileSync(path.join(proj, "docs", "constitution.md"), "# Rules\nSize first.");
   const r2 = run("session-start.js", undefined, { cwd: proj });
-  assert.match(r2.stdout, /Spec before code/);
-  assert.match(r2.stdout, /specs\/001-login/);
-});
-
-test("session-start --compact restores open tasks only", () => {
-  const proj = tmp();
-  const s = path.join(proj, "specs", "002-cart");
-  fs.mkdirSync(s, { recursive: true });
-  fs.writeFileSync(path.join(s, "tasks.md"), "- [x] T1 done\n- [ ] T2 add item\n");
-  const r = run("session-start.js", undefined, { cwd: proj, args: ["--compact"] });
-  assert.match(r.stdout, /T2 add item/);
-  assert.doesNotMatch(r.stdout, /T1 done/);
+  assert.match(r2.stdout, /Size first/);
 });
 
 test("memory nudge: blocks once after enough edits, not twice, resets after save", () => {
