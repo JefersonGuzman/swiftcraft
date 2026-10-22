@@ -62,7 +62,7 @@ test("changelogSection extracts one version's notes", () => {
 });
 
 test("changelog-notes script prints a section and fails on unknown version", () => {
-  const cl = path.join(fs.mkdtempSync(path.join(os.tmpdir(), "sc-cl-")), "CHANGELOG.md");
+  const cl = path.join(require("./helpers.js").tmp("sc-cl-"), "CHANGELOG.md");
   fs.writeFileSync(cl, CHANGELOG);
   const ok = spawnSync("node", [path.join(root, "scripts", "changelog-notes.js"), "0.3.0", "--file", cl], { encoding: "utf8" });
   assert.strictEqual(ok.status, 0);
@@ -87,7 +87,7 @@ function serve(latest) {
   return new Promise((resolve) => server.listen(0, "127.0.0.1", () => resolve({ server, hits, base: `http://127.0.0.1:${server.address().port}` })));
 }
 const installed = () => JSON.parse(fs.readFileSync(path.join(root, ".claude-plugin", "plugin.json"), "utf8")).version;
-const cacheDir = () => fs.mkdtempSync(path.join(os.tmpdir(), "sc-cache-"));
+const cacheDir = () => require("./helpers.js").tmp("sc-cache-");
 const check = (args, env) =>
   run("node", [path.join(root, "scripts", "update-check.js"), ...args], { env: { ...process.env, ...env }, encoding: "utf8" }).catch((e) => e);
 

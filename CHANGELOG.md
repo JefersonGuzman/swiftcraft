@@ -5,6 +5,9 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versioning: [S
 
 ## [Unreleased]
 
+### Fixed
+- Memory hooks never removed their per-session state files; files older than 7 days are now deleted when a new session starts, and the state folder can be set with `SWIFTCRAFT_STATE_DIR`. Tests use self-cleaning temp folders (`tests/helpers.js`).
+
 ## [0.3.1] - 2026-10-22
 
 ### Fixed

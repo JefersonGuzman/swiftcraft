@@ -6,7 +6,7 @@ const os = require("node:os");
 const path = require("node:path");
 
 const root = path.join(__dirname, "..");
-const tmp = () => fs.mkdtempSync(path.join(os.tmpdir(), "vibe-test-"));
+const { tmp } = require("./helpers.js");
 
 test("export-agents fails without AGENTS.md", () => {
   const r = spawnSync("node", [path.join(root, "scripts", "export-agents.js"), tmp()], { encoding: "utf8" });

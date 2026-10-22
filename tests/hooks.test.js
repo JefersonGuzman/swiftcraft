@@ -5,16 +5,17 @@ const fs = require("node:fs");
 const os = require("node:os");
 const path = require("node:path");
 
+const { tmp } = require("./helpers.js");
 const root = path.join(__dirname, "..");
+const STATE_DIR = tmp("sc-state-");
 const script = (n) => path.join(root, "hooks", "scripts", n);
 const run = (name, input, opts = {}) =>
   spawnSync("node", [script(name), ...(opts.args || [])], {
     input: input === undefined ? "" : JSON.stringify(input),
     encoding: "utf8",
     cwd: opts.cwd,
-    env: { ...process.env, ...(opts.env || {}) },
+    env: { ...process.env, SWIFTCRAFT_STATE_DIR: STATE_DIR, ...(opts.env || {}) },
   });
-const tmp = () => fs.mkdtempSync(path.join(os.tmpdir(), "vibe-test-"));
 
 test("protect-files blocks .env and keys, allows .env.example", () => {
   assert.strictEqual(run("protect-files.js", { tool_input: { file_path: "C:/x/.env" } }).status, 2);
@@ -156,4 +157,16 @@ test("every skill has frontmatter with name matching its folder and a descriptio
     assert.match(fm[1], new RegExp(`^name: ${name}$`, "m"), `${name}: name mismatch`);
     assert.match(fm[1], /^description: .{20,}/m, `${name}: weak description`);
   }
+});
+
+test("memory-track prunes state files older than 7 days and keeps recent ones", () => {
+  const old = path.join(STATE_DIR, "swiftcraft-oldsession.json");
+  const recent = path.join(STATE_DIR, "swiftcraft-recentsession.json");
+  fs.writeFileSync(old, "{}");
+  fs.writeFileSync(recent, "{}");
+  const eightDaysAgo = new Date(Date.now() - 8 * 24 * 3600 * 1000);
+  fs.utimesSync(old, eightDaysAgo, eightDaysAgo);
+  run("memory-track.js", { session_id: `prune${Date.now()}`, tool_name: "Edit", tool_input: { file_path: "/p/a.ts" } });
+  assert.ok(!fs.existsSync(old), "old state file must be removed");
+  assert.ok(fs.existsSync(recent), "recent state file must stay");
 });

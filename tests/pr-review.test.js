@@ -170,7 +170,7 @@ test("buildReview caps inline comments and overflows to the body; redacts secret
 });
 
 test("pr-post is a dry run by default and needs no network", () => {
-  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "sc-pr-"));
+  const dir = require("./helpers.js").tmp("sc-pr-");
   fs.writeFileSync(path.join(dir, "diff.patch"), DIFF);
   fs.writeFileSync(path.join(dir, "meta.json"), JSON.stringify({ number: 7, url: "https://github.com/acme/shop/pull/7", headRefOid: "abc123" }));
   fs.writeFileSync(path.join(dir, "findings.json"), JSON.stringify(findings()));

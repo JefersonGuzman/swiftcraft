@@ -16,7 +16,19 @@ process.stdin.on("end", () => {
   }
   // Tool calls made by subagents carry agent_id; they must not count toward the parent's nudge.
   if (input.agent_id) process.exit(0);
-  const file = path.join(os.tmpdir(), `swiftcraft-${String(input.session_id || "nosession").replace(/[^\w-]/g, "")}.json`);
+  const file = path.join(process.env.SWIFTCRAFT_STATE_DIR || os.tmpdir(), `swiftcraft-${String(input.session_id || "nosession").replace(/[^\w-]/g, "")}.json`);
+  // One small state file per session: when a new session starts, delete files older than 7 days.
+  if (!fs.existsSync(file)) {
+    try {
+      const dir = path.dirname(file);
+      const cutoff = Date.now() - 7 * 24 * 3600 * 1000;
+      for (const name of fs.readdirSync(dir)) {
+        if (!/^swiftcraft-[\w-]+\.json$/.test(name) || name === "swiftcraft-update-check.json") continue;
+        const p = path.join(dir, name);
+        if (fs.statSync(p).mtimeMs < cutoff) fs.rmSync(p, { force: true });
+      }
+    } catch {}
+  }
   let st = { edits: 0, nudgedAt: 0 };
   try {
     st = { ...st, ...JSON.parse(fs.readFileSync(file, "utf8")) };

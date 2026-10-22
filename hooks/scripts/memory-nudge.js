@@ -21,7 +21,7 @@ process.stdin.on("end", () => {
   }
   if (input.stop_hook_active) process.exit(0);
 
-  const file = path.join(os.tmpdir(), `swiftcraft-${String(input.session_id || "nosession").replace(/[^\w-]/g, "")}.json`);
+  const file = path.join(process.env.SWIFTCRAFT_STATE_DIR || os.tmpdir(), `swiftcraft-${String(input.session_id || "nosession").replace(/[^\w-]/g, "")}.json`);
   let st = { edits: 0, nudgedAt: 0 };
   try {
     st = { ...st, ...JSON.parse(fs.readFileSync(file, "utf8")) };
