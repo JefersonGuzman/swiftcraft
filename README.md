@@ -7,7 +7,7 @@ Stack-agnostic. Lean on purpose: 11 skills, 4 agents, 10 commands, 5 hooks.
 ## Install
 
 ```
-/plugin marketplace add <your-user>/swiftcraft
+/plugin marketplace add JefersonGuzman/swiftcraft
 /plugin install swiftcraft@swiftcraft
 ```
 
