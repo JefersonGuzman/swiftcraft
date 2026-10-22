@@ -5,6 +5,9 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versioning: [S
 
 ## [Unreleased]
 
+### Fixed
+- `npm run release` now prints next steps that match the branch and pull request workflow instead of suggesting a push to `main`.
+
 ## [0.4.0] - 2026-10-22
 
 ### Changed
