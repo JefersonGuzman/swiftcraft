@@ -5,6 +5,12 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versioning: [S
 
 ## [Unreleased]
 
+### Added
+- `/swiftcraft:pr-review`: PR review against project constitution/specs/architecture with a dry run and confirmed posting (`pr-review` skill, read-only `pr-reviewer` agent, `scripts/pr-fetch.js`, `scripts/pr-post.js`).
+
+### Fixed
+- Memory nudge: writing fallback memory files now counts as a save, which stops the repeated nudge.
+
 ## [0.2.0] - 2026-10-22
 
 ### Added

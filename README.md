@@ -2,7 +2,7 @@
 
 A small Claude Code plugin that keeps vibe coding fast **and** organized: spec first, architecture guardrails, test-first loop, written decisions, fresh-context review.
 
-Stack-agnostic. Lean on purpose: 10 skills, 3 agents, 9 commands, 5 hooks.
+Stack-agnostic. Lean on purpose: 11 skills, 4 agents, 10 commands, 5 hooks.
 
 ## Install
 
@@ -28,11 +28,12 @@ Requires Node.js 18+ (hooks are plain Node scripts, work on Windows/macOS/Linux)
 | — | `/swiftcraft:remember <text>` | Save to project memory |
 | — | `/swiftcraft:setup` | Check/install companions (Engram, RTK) |
 | — | `/swiftcraft:export` | Generate Cursor / Gemini CLI / Copilot rules from AGENTS.md |
+| — | `/swiftcraft:pr-review <n\|url>` | Review a GitHub PR against your constitution/specs/architecture; posts comments only after you confirm |
 
 ## What's inside
 
-- **Skills**: `project-start`, `architecture-guard`, `spec-first`, `tdd-loop`, `adr`, `review-gate`, `context-hygiene`, `memory`, `token-saver`, `ui-design`.
-- **Agents**: `architect` (design), `reviewer` (diff review), `explorer` (compact code maps). All read-only.
+- **Skills**: `project-start`, `architecture-guard`, `spec-first`, `tdd-loop`, `adr`, `review-gate`, `context-hygiene`, `memory`, `token-saver`, `ui-design`, `pr-review`.
+- **Agents**: `architect` (design), `reviewer` (diff review), `explorer` (compact code maps), `pr-reviewer` (PR findings as JSON). All read-only; `pr-reviewer` has no shell at all.
 - **Hooks**
   - `SessionStart`: injects `docs/constitution.md`; after compaction restores the active spec's open tasks.
   - `PreToolUse`: blocks writes to `.env`, keys and certificates.
@@ -50,6 +51,12 @@ The `memory` skill and `/swiftcraft:remember` use [Engram](https://github.com/Ge
 - **Codex / OpenCode / Cursor / Gemini / Copilot** read `AGENTS.md` (open standard). `/swiftcraft:export` generates `.cursor/rules/swiftcraft.mdc`, `GEMINI.md` and `.github/copilot-instructions.md` from it.
 - `.codex-plugin/plugin.json` exposes the same `skills/` to Codex. Skills are plain `SKILL.md` folders and can be copied to any agent that reads them.
 - Hooks, slash commands and agents are Claude Code features. The Codex manifest and the Cursor/Gemini/Copilot exports were written from public docs and are **not yet tested** in those tools.
+
+## PR review
+
+`/swiftcraft:pr-review 42` (or a PR URL) fetches the PR with the GitHub CLI (`gh auth status` must be OK), has the read-only `pr-reviewer` agent check it against `docs/constitution.md`, `docs/architecture.md`, the specs and ADRs, then shows a **dry run** of the review. Only after you confirm does it publish, as a single `COMMENT` review: findings on diff lines become inline comments, the rest go into the review body, secrets are redacted, and approving or requesting changes stays with you. PR text is treated as untrusted data. Scripts: `scripts/pr-fetch.js`, `scripts/pr-post.js` (dry run unless `--post`).
+
+For fully automatic reviews on every PR you would add a CI workflow with Claude Code's GitHub Action; that needs an API key secret and is not included.
 
 ## Architecture it enforces
 
