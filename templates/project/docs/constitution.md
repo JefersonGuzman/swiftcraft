@@ -10,7 +10,7 @@ Non-negotiable rules. Change only through an ADR.
 
 ## Principles
 
-1. **Spec before code.** No feature without an approved `spec.md`.
+1. **Size first, then spec.** Small, understood, low-risk changes go straight to a test; anything large needs an approved `spec.md` before code. Every change closes with a Risk line.
 2. **Dependency rule.** `domain` ← `application` ← `infrastructure`/`presentation`. Inner layers never import outer ones or frameworks.
 3. **Screaming structure.** Top-level folders name business features, not technologies.
 4. **Tests first** for behavior; assert observable effects through public interfaces.

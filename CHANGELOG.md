@@ -5,6 +5,9 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versioning: [S
 
 ## [Unreleased]
 
+### Changed
+- `spec-first` now classifies the size of a change first (small / large, never by file count) and lists six high-risk items. Small, understood, low-risk work goes straight to a test with no spec files; large work gets spec/plan/tasks with the user's exact words and a `## Log` (`L1` = original request). Every code change closes with a `Risk: none | item N` line and any named risk means `/swiftcraft:review` before the commit. `tdd-loop`, `review-gate`, `/swiftcraft:spec` and the project templates (`AGENTS.md`, constitution, spec template) follow the same rule.
+
 ### Fixed
 - Memory hooks never removed their per-session state files; files older than 7 days are now deleted when a new session starts, and the state folder can be set with `SWIFTCRAFT_STATE_DIR`. Tests use self-cleaning temp folders (`tests/helpers.js`).
 

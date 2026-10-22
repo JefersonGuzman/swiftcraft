@@ -13,7 +13,8 @@ Implement **one task**, then stop.
 4. **REFACTOR**: remove duplication, improve names; tests stay green.
 5. **Run** the full test + lint command from `CLAUDE.md`. Report real output, not assumptions.
 6. **Update** `tasks.md` (check the box only after observed pass) and docs/help text if a command, option or message changed.
-7. **Stop.** Suggest a Conventional Commit message (`feat(scope): …`). Commit only if the user asks.
+7. **Close with the Risk line**: `Risk: none` or `Risk: item N (reason)` (items listed in `spec-first`). Any item means `/swiftcraft:review` before the commit.
+8. **Stop.** Suggest a Conventional Commit message (`feat(scope): …`). Commit only if the user asks.
 
 ## Test quality
 

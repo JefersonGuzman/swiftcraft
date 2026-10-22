@@ -16,7 +16,8 @@ Review the diff (`git diff` + untracked files). Report findings, ordered by seve
 5. **Tests**: assert behavior (not implementation), deterministic, cover the named cases.
 6. **Readability**: names reveal intent, functions small, no dead code or stray debug output.
 7. **Docs**: README/help/ADR/tasks updated when behavior or decisions changed.
-8. **Size**: > ~400 changed lines → suggest splitting into reviewable commits/PRs.
+8. **Risk line**: the change closes with `Risk: none` or `Risk: item N (reason)`. Check it is honest: does the diff touch data, security, a public contract, concurrency, delivery or environment, or code other behavior shares? A high-risk change should be its own commit.
+9. **Size**: > ~400 changed lines → suggest splitting into reviewable commits/PRs.
 
 ## Output
 

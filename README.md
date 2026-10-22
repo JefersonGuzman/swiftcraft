@@ -45,7 +45,7 @@ If you installed with `--plugin-dir`, update by running `git pull` in the harnes
 | Step | Command | Result |
 |------|---------|--------|
 | 0 | `/swiftcraft:init` | Project scaffold: constitution, architecture, ADRs, spec templates |
-| 1 | `/swiftcraft:spec <idea>` | `specs/NNN-slug/spec.md` (what/why) |
+| 1 | `/swiftcraft:spec <idea>` | Sizes the change first: small = straight to a test; large = `specs/NNN-slug/spec.md` (what/why, your exact words) |
 | 2 | `/swiftcraft:plan` | `plan.md` + `tasks.md` |
 | 3 | `/swiftcraft:build` | One task, RED → GREEN → REFACTOR, then stop |
 | 4 | `/swiftcraft:review` | Fresh-context diff review, verdict |
