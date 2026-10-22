@@ -1,4 +1,4 @@
-# Changelog
+﻿# Changelog
 
 All notable changes to this project are documented here.
 Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versioning: [SemVer](https://semver.org/).
@@ -9,6 +9,7 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versioning: [S
 - `/swiftcraft:pr-review`: PR review against project constitution/specs/architecture with a dry run and confirmed posting (`pr-review` skill, read-only `pr-reviewer` agent, `scripts/pr-fetch.js`, `scripts/pr-post.js`).
 
 ### Fixed
+- pr-fetch.js ignored its first positional argument when --repo was absent, so /swiftcraft:pr-review 42 failed at step 1; arguments are now parsed in scripts/lib/pr-args.js with tests.
 - Memory nudge: writing fallback memory files now counts as a save, which stops the repeated nudge.
 
 ## [0.2.0] - 2026-10-22

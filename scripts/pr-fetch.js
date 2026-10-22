@@ -9,10 +9,8 @@ const path = require("path");
 const { parsePrRef } = require("./lib/pr-ref.js");
 
 const MAX_DIFF_BYTES = 300 * 1024;
-const args = process.argv.slice(2);
-const repoFlag = args.indexOf("--repo");
-const explicitRepo = repoFlag >= 0 ? args[repoFlag + 1] : null;
-const ref = args.find((a, i) => !a.startsWith("--") && i !== repoFlag + 1);
+const { parseFetchArgs } = require("./lib/pr-args.js");
+const { ref, repo: explicitRepo } = parseFetchArgs(process.argv.slice(2));
 
 let parsed;
 try {

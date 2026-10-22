@@ -51,6 +51,25 @@ test("parsePrRef accepts numbers and github URLs, rejects anything else", () => 
   }
 });
 
+test("parseFetchArgs finds the PR ref with or without --repo, in any order", () => {
+  const { parseFetchArgs } = require("../scripts/lib/pr-args.js");
+  assert.deepStrictEqual(parseFetchArgs(["42"]), { ref: "42", repo: null });
+  assert.deepStrictEqual(parseFetchArgs(["--repo", "a/b", "42"]), { ref: "42", repo: "a/b" });
+  assert.deepStrictEqual(parseFetchArgs(["42", "--repo", "a/b"]), { ref: "42", repo: "a/b" });
+  assert.deepStrictEqual(parseFetchArgs(["https://github.com/a/b/pull/3"]), { ref: "https://github.com/a/b/pull/3", repo: null });
+  assert.deepStrictEqual(parseFetchArgs([]), { ref: undefined, repo: null });
+});
+
+test("pr-fetch with a valid bare number gets past argument parsing (fails only at gh)", () => {
+  const r = spawnSync("node", [path.join(root, "scripts", "pr-fetch.js"), "42"], {
+    encoding: "utf8",
+    env: { ...process.env, PATH: path.dirname(process.execPath) }, // node only: gh is not found
+  });
+  assert.notStrictEqual(r.status, 0);
+  assert.doesNotMatch(r.stderr, /Invalid PR reference/);
+  assert.match(r.stderr, /gh failed/);
+});
+
 test("redact removes token-like secrets", () => {
   assert.match(redact("key ghp_abcdefghijklmnopqrstuvwxyz0123456789 end"), /\[redacted\]/);
   assert.match(redact("AKIAABCDEFGHIJKLMNOP"), /\[redacted\]/);
