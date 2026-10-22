@@ -11,7 +11,7 @@ src/
     presentation/     controllers / routes / UI / CLI
   shared/             minimal cross-feature kernel
   app/                composition root (wiring, bootstrap)
-specs/                spec.md, plan.md, tasks.md per feature
+odd/tasks/            feature documents (large work only)
 docs/adr/             decision records
 ```
 
@@ -24,7 +24,7 @@ docs/adr/             decision records
 
 ## Features
 
-| Feature | Purpose | Spec |
+| Feature | Purpose | Feature document |
 |---------|---------|------|
 | _none yet_ | | |
 

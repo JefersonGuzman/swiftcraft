@@ -24,7 +24,7 @@ Biggest lever first. Output of tools and file reads dominate cost, not reply pro
 
 - One task per turn; stop after verifying it (`tdd-loop`).
 - Delegate broad exploration to the `explorer` agent (returns ~30 lines).
-- Persist state to `tasks.md`, ADRs and memory so a fresh session can resume instead of dragging history (`context-hygiene`, `memory`).
+- Persist state to the feature document (`odd/tasks/`), ADRs and memory so a fresh session can resume instead of dragging history (`context-hygiene`, `memory`).
 - Do not paste large logs or files into chat; reference paths.
 
 ## 4. Shorter replies (smallest win, ~5-15% end to end)

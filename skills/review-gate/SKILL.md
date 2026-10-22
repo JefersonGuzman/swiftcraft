@@ -1,6 +1,6 @@
 ---
 name: review-gate
-description: Review the current diff against spec, architecture and quality before commit or PR. Use after finishing a task or before opening a PR.
+description: Review the current diff against the specs, architecture and quality before commit or PR. Use after finishing a task or before opening a PR.
 ---
 
 # review-gate
@@ -9,7 +9,7 @@ Review the diff (`git diff` + untracked files). Report findings, ordered by seve
 
 ## Checklist
 
-1. **Spec**: every touched requirement `R#` is implemented and tested; nothing unrequested was added.
+1. **Specs**: every touched spec `S#` of the feature document (`odd/tasks/`) is implemented and tested, with the user's words kept; nothing unrequested was added. For a small change the user's request is the spec.
 2. **Architecture**: dependency rule holds; code sits in the right layer; no cross-feature internals.
 3. **Correctness**: edge cases, error paths, null/empty input, concurrency, idempotency.
 4. **Security**: no secrets, input validated at the boundary, authz checked, no injection.

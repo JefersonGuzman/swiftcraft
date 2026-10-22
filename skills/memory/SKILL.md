@@ -19,17 +19,18 @@ Call `mem_save` right after: a decision, a bug fix (with root cause), a discover
 - Title: short and searchable (`Fix: refresh token race in auth`).
 - Content: what, why, where (file paths), and how to apply it. Facts only.
 - Reuse a stable topic key for evolving subjects so updates replace instead of duplicating (`mem_suggest_topic_key`, `mem_update`).
-- Do not save what the repo already records (code, git history, specs, ADRs). Link to them instead.
+- Do not save what the repo already records (code, git history, feature documents, ADRs). Link to them instead.
+- Feature documents: mirror the full `odd/tasks/<feature-name>.md` under the topic key `odd/<feature-name>/tasks`. Write the local file first, read both back, and mark the mirror pending if Engram is unavailable.
 - Never save secrets, tokens or personal data.
 
 ## Close
 
 Before saying a task or session is done, call `mem_session_summary` (goal, done, decisions, next step). Then give the user the complete answer as the final message; saving memory is bookkeeping, never the reply. If a memory call fails, answer anyway.
 
-## Memory vs ADR vs spec
+## Memory vs ADR vs feature document
 
 | Content | Where |
 |---------|-------|
 | Why we chose X over Y, hard to reverse | ADR (`docs/adr/`), memory holds a pointer |
-| What a feature must do | spec |
+| What a feature must do | feature document (mirrored to memory) |
 | Gotchas, fixes, conventions, "we tried this" | memory |

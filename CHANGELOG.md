@@ -5,6 +5,18 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versioning: [S
 
 ## [Unreleased]
 
+### Breaking
+- The spec-driven flow is replaced by **ODD (Organic Driven Development)**. `/swiftcraft:spec`, `/swiftcraft:plan` and the `spec-first` skill are removed; per-feature `specs/NNN-<slug>/{spec,plan,tasks}.md` is replaced by one feature document `odd/tasks/<feature-name>.md` (`## Specs` with `S#`, `## Tasks` with `T#`, `## Log` with `L1`). Existing `specs/` folders are not read any more: move what you still need into a feature document, or delete them.
+
+### Added
+- `odd` skill and `/swiftcraft:odd <request>`: the seven-step protocol (authorize, explore, resolve uncertainty, classify, track, implement, close). Explain, review and proposal requests stay read-only until a change is explicitly requested; delegation only for named reasons (mapping, parallel units, context, verification); slices of about 400 lines as an advisory size; one "Needs your decision" result when blocked.
+- `/swiftcraft:status` and `scripts/odd.js` (`status`, `check`): progress, next task, pending decisions and structural validation of a feature document.
+- `odd-lint` hook: validates `odd/tasks/<feature>.md` on every write (every task links a spec, every spec is covered, unique IDs, `L1` present, route declared, ticked tasks record a commit or evidence).
+- Session start and post-compaction context now show the active feature document and its open tasks.
+- Memory mirror of feature documents under the topic `odd/<feature-name>/tasks`.
+- `tdd-loop`: one RED test per requested rule and a differential check against the base commit when shared code changes.
+- `templates/project/odd/tasks/_template.md`; project templates, `review-gate`, `pr-reviewer` and `architect` follow the new flow.
+
 ### Fixed
 - `npm run release` now prints next steps that match the branch and pull request workflow instead of suggesting a push to `main`.
 
