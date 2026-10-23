@@ -13,7 +13,7 @@ Explore first, implement, then check in proportion to the work. Ceremony follows
 2. **Explore.** Read the existing code and requirements, scaled to the request, before proposing or writing. Explore only for a map you need to decide or route; never to read files you will read anyway before writing.
 3. **Resolve uncertainty.** Name the uncertainty first. Research a named gap (primary sources, facts separated from assumptions, read-only). Ask **one** focused question only for a real product or design decision, then stop and wait. For one high-consequence unproven premise you may run at most one scoped, read-only assumption challenge; deterministic failures are fixed, not debated.
 4. **Classify.** Size the task (next section). Small stays inline and creates no durable artifact.
-5. **Track.** For large work, before the first write create `odd/tasks/<feature-name>.md` from `odd/tasks/_template.md` and tell the user in one line which document and how many tasks. Do not ask permission for this.
+5. **Track.** For large work, before the first write create `odd/tasks/<feature-name>.md` in the exact format shown under "The feature document" below (in a fresh project the template file `odd/tasks/_template.md` does not exist yet) and tell the user in one line which document and how many tasks. Do not ask permission for this.
 6. **Implement.** One task at a time through the smallest useful route (below), tests first via `tdd-loop`, proportionate checks, commit in reviewable slices.
 7. **Close.** Report the verified outcome, every failed, skipped or pending check, the Risk line and the next step. Blocked or missing proof becomes **one** "Needs your decision" result naming the open blockers; never more verification loops.
 
@@ -40,7 +40,23 @@ If a bounded look cannot tell whether an item applies, treat it as high risk.
 
 ## The feature document: `odd/tasks/<feature-name>.md`
 
-Fixed order, stable parts first and the growing log last. Validated by `node scripts/odd.js check <file>` and, on every write, by the `odd-lint` hook.
+Fixed order, stable parts first and the growing log last. Validated by `node scripts/odd.js check <file>` and, on every write, by the `odd-lint` hook. **Copy this shape exactly** (in a fresh project `odd/tasks/_template.md` does not exist yet; the same file ships with the plugin at `${CLAUDE_PLUGIN_ROOT}/templates/project/odd/tasks/_template.md`):
+
+```markdown
+# Table reservations
+Objective: let guests book a table · Branch: feat/reservations · Delivery: ask-on-risk · Runner: npm test
+
+## Specs
+- S1: "Guests can book a table for 2 to 8 people"
+
+## Tasks
+- [ ] T1 (S1) Booking use case — route: inline · commit: — · done when: unit tests for 2 and 8 people pass
+
+## Log
+- L1 (2026-10-22) I want guests to reserve tables, 2 to 8 people.
+```
+
+Do not invent other sections such as `## Request`, `## Size` or `## Open decisions`: the user's request goes in `## Log` as `L1`, requirements in `## Specs`, and open decisions in `## Needs your decision`.
 
 - **Header** (2-3 lines): objective, branch, delivery strategy, test runner.
 - **IDs**: specs are `S#`, tasks are `T#`, log entries are `L#`; they are stable and never renumbered.

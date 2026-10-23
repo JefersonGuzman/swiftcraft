@@ -4,7 +4,7 @@
 //   node odd.js check <file>             validate the document; exit 1 and list the problems if it is malformed
 const fs = require("fs");
 const path = require("path");
-const { checkFeatureDoc, statusOf, nextStep, findActiveDoc } = require("./lib/odd.js");
+const { checkFeatureDoc, statusOf, nextStep, findActiveDoc, FORMAT_HINT } = require("./lib/odd.js");
 
 const args = process.argv.slice(2);
 const cmd = args[0];
@@ -64,6 +64,7 @@ function check() {
   if (problems.length) {
     console.log(`${arg}: ${problems.length} problem(s)`);
     for (const p of problems) console.log(`  - ${p}`);
+    console.log(`\n${FORMAT_HINT}`);
     process.exit(1);
   }
   const st = statusOf(text);

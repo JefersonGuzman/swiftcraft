@@ -3,7 +3,7 @@
 // the problems back to the agent (exit 2). Everything else, including the template, is ignored. Fails open.
 const fs = require("fs");
 const path = require("path");
-const { checkFeatureDoc } = require("../../scripts/lib/odd.js");
+const { checkFeatureDoc, FORMAT_HINT } = require("../../scripts/lib/odd.js");
 
 let raw = "";
 process.stdin.on("data", (c) => (raw += c));
@@ -23,7 +23,7 @@ process.stdin.on("end", () => {
     process.exit(0);
   }
   if (problems.length) {
-    process.stderr.write(`swiftcraft odd-lint: ${path.basename(file)} breaks the feature document format:\n${problems.map((p) => `  - ${p}`).join("\n")}\nFix them (see skill "odd"), or tell the user why a rule does not apply.\n`);
+    process.stderr.write(`swiftcraft odd-lint: ${path.basename(file)} breaks the feature document format:\n${problems.map((p) => `  - ${p}`).join("\n")}\n\nFix them with the format below; it is complete, you do not need to read any other file. Rewrite the document in that shape, keeping the user's words verbatim.\n\n${FORMAT_HINT}\n`);
     process.exit(2);
   }
   process.exit(0);
