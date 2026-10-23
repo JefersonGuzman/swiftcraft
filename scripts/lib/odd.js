@@ -10,6 +10,23 @@ const fs = require("fs");
 const path = require("path");
 
 const REQUIRED = ["Specs", "Tasks", "Log"];
+
+// The complete format, repeated in every message about it: an agent that cannot see the plugin folder (or a project
+// that has no odd/tasks/_template.md yet) must be able to fix a document from the message alone.
+const FORMAT_HINT = [
+  "Expected format of odd/tasks/<feature-name>.md (sections in this order):",
+  "# <Feature name>",
+  "Objective: <one line> · Branch: <feat/...> · Delivery: ask-on-risk · Runner: <test command>",
+  "",
+  "## Specs",
+  '- S1: "<the user\'s exact words, verbatim>"',
+  "",
+  "## Tasks",
+  "- [ ] T1 (S1) <outcome> — route: inline · commit: — · done when: <observable check>",
+  "",
+  "## Log",
+  "- L1 (2026-10-22) <the user's original request, verbatim>",
+].join("\n");
 const TASK_RE = /^- \[( |x|X)\]\s+(T\d+)\s*\(([^)]*)\)\s*(.*)$/;
 const SPEC_RE = /^- (S\d+):\s*(.+)$/;
 const LOG_RE = /^- (L\d+)\b\s*(.*)$/;
@@ -83,7 +100,7 @@ function checkFeatureDoc(text) {
     if (seen.has(id)) problems.push(`Duplicate ID ${id}.`);
     seen.add(id);
   }
-  for (const line of d.malformed) problems.push(`Malformed task line: ${line.trim()}`);
+  for (const line of d.malformed) problems.push(`Malformed task line: ${line.trim()} — write it as: - [ ] T1 (S1) <outcome> — route: inline · commit: — · done when: <observable check>`);
 
   const known = new Set(d.specs.map((s) => s.id));
   const covered = new Set();
@@ -156,4 +173,4 @@ function findActiveDoc(cwd) {
   return files.length ? { ...files[0], status: statusOf(fs.readFileSync(files[0].file, "utf8")) } : null;
 }
 
-module.exports = { parseFeatureDoc, checkFeatureDoc, statusOf, nextStep, findActiveDoc };
+module.exports = { parseFeatureDoc, checkFeatureDoc, statusOf, nextStep, findActiveDoc, FORMAT_HINT };
