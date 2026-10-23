@@ -7,13 +7,14 @@ const path = require("path");
 const { SECRET_PATTERNS } = require("./review.js");
 
 const FILE = "swiftcraft.config.json";
-const DEFAULTS = { memory: { nudge: true, nudgeEdits: 3 }, review: { reminder: true }, updates: { check: true }, delivery: { advisoryLines: 400 } };
+const DEFAULTS = { memory: { nudge: true, nudgeEdits: 3 }, review: { reminder: true }, updates: { check: true, channel: "stable" }, delivery: { advisoryLines: 400 } };
 
 const SPEC = {
   "memory.nudge": { type: "bool" },
   "memory.nudgeEdits": { type: "int", min: 1, max: 100 },
   "review.reminder": { type: "bool" },
   "updates.check": { type: "bool" },
+  "updates.channel": { type: "enum", values: ["stable", "beta"] },
   "delivery.advisoryLines": { type: "int", min: 50, max: 5000 },
 };
 const MANDATORY = /^(guard|protect|protectfiles|protect-files|commandguard|command-guard|denyrules)$/i;
@@ -67,6 +68,12 @@ function validate(cfg) {
           errors.push(`${path_} holds a value that looks like a credential; ${FILE} must not hold secrets.`);
         } else if (spec.type === "bool") {
           if (typeof sv !== "boolean") errors.push(`${path_} must be true or false.`);
+          else {
+            values[k] = values[k] || {};
+            values[k][sk] = sv;
+          }
+        } else if (spec.type === "enum") {
+          if (!spec.values.includes(sv)) errors.push(`${path_} must be one of: ${spec.values.join(", ")}.`);
           else {
             values[k] = values[k] || {};
             values[k][sk] = sv;
@@ -130,6 +137,7 @@ function loadConfig(start, env = process.env) {
   if (/^\d+$/.test(env.SWIFTCRAFT_NUDGE_EDITS || "")) envSet("memory.nudgeEdits", Number(env.SWIFTCRAFT_NUDGE_EDITS));
   if (env.SWIFTCRAFT_NO_REVIEW_REMINDER === "1") envSet("review.reminder", false);
   if (env.SWIFTCRAFT_NO_UPDATE_CHECK === "1") envSet("updates.check", false);
+  if (SPEC["updates.channel"].values.includes(env.SWIFTCRAFT_CHANNEL)) envSet("updates.channel", env.SWIFTCRAFT_CHANNEL);
   return { values, sources, errors, file };
 }
 

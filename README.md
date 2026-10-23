@@ -36,7 +36,7 @@ claude plugin marketplace update swiftcraft
 claude plugin update swiftcraft@swiftcraft
 ```
 
-Restart Claude Code afterwards. The command never updates anything by itself. A short notice at session start (at most once every 24 h, 2.5 s timeout, silent when offline) tells you when a newer version exists; set `SWIFTCRAFT_NO_UPDATE_CHECK=1` to disable it. Only the public `plugin.json` and `CHANGELOG.md` of this repository are fetched; nothing about you or your project is sent.
+Restart Claude Code afterwards. The command never updates anything by itself. A short notice at session start (at most once every 24 h, 2.5 s timeout, silent when offline) tells you when a newer version exists; set `SWIFTCRAFT_NO_UPDATE_CHECK=1` to disable it. Only the public `plugin.json` and `CHANGELOG.md` of this repository are fetched; nothing about you or your project is sent. To hear about prereleases too, use the beta channel (`SWIFTCRAFT_CHANNEL=beta` or `updates.channel` in `swiftcraft.config.json`); prereleases are published as GitHub prereleases and the default channel never announces them.
 
 If you installed with `--plugin-dir`, update by running `git pull` in the harness folder.
 
@@ -81,6 +81,7 @@ Put a `swiftcraft.config.json` at the project root to tune low-stakes behavior. 
 | `memory.nudgeEdits` | Edits (1-100) before that reminder | `SWIFTCRAFT_NUDGE_EDITS` |
 | `review.reminder` | Ask for `/swiftcraft:review` once per sensitive diff | `SWIFTCRAFT_NO_REVIEW_REMINDER=1` |
 | `updates.check` | Notice of a newer release at session start | `SWIFTCRAFT_NO_UPDATE_CHECK=1` |
+| `updates.channel` | `stable` (default) or `beta` (also announces prereleases) | `SWIFTCRAFT_CHANNEL=beta` |
 | `delivery.advisoryLines` | Advisory size (50-5000) for a commit unit; never a cap | none |
 
 Some controls are mandatory and **not configurable**: the command guard's deny rules and protected files. The file is rejected (with the reason) if it names them, has unknown keys, wrong types, or anything that looks like a secret; while it is rejected the defaults apply. Extra guard rules live in `docs/guard-rules.json`.

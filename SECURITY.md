@@ -30,6 +30,17 @@ The `PreToolUse` command guard (Bash and PowerShell) blocks a short list of cata
 
 Report guard bypasses (a dangerous command that is not caught) through the private channel above.
 
+## Verifying a release
+
+Each release published by the workflow carries a source archive (`swiftcraft-X.Y.Z.tar.gz`), a `SHA256SUMS` file and a build provenance attestation created by GitHub Actions. To check a download:
+
+```bash
+sha256sum -c SHA256SUMS
+gh attestation verify swiftcraft-X.Y.Z.tar.gz --repo JefersonGuzman/swiftcraft
+```
+
+Status: this pipeline is configured but **not verified** yet: it has not run on a real release. The first release that uses it will show whether the attestation and the checksum file are created and can be verified; until then do not rely on it. A checksum published next to the archive proves the download is intact, not that the project is trustworthy: review the code you install.
+
 ## Hardening tips
 
 - Review `hooks/hooks.json` and `scripts/` before installing any plugin, including this one.
