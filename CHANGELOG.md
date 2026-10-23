@@ -5,6 +5,8 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versioning: [S
 
 ## [Unreleased]
 
+## [0.6.0] - 2026-10-23
+
 ### Added
 - **Optional output styles** (`output-styles/swiftcraft-lean.md`, `swiftcraft-explained.md`): short result-first answers, or a short *why* after each change. They keep the coding instructions, are never forced on the user and change tone and length only (tests, permissions, hooks, the ODD protocol, the `Risk:` line and "not verified" reporting stay). Plugin-shipped output styles are documented by Claude Code; loading these two in a live session has not been checked.
 - **Documentation sources** (`context-hygiene`): use a documentation MCP only if one is available, and separate "Consulted: <source>" from "general knowledge (not verified against current docs)".
