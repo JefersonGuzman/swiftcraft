@@ -20,7 +20,7 @@ Human-in-the-loop PR review. Nothing is published without an explicit "yes" from
 4. **Dry run.** `node "${CLAUDE_PLUGIN_ROOT}/scripts/pr-post.js" --dir <dir>` prints exactly what would be published: review body, inline comments, counts. Each finding carries a `quote` of its source line: the script verifies it against the diff, relocates a comment whose line number was wrong (when the quote matches exactly one line) and moves anything it cannot verify into the review body. Secrets are redacted. In the dry run, check that every inline comment sits on the line it is about.
 5. **Show the user** a short summary (verdict, counts, each finding in one line with `path:line`) and **ask for confirmation** to publish. Offer to drop or edit findings first.
 6. **Publish only on a clear yes.** `node "${CLAUDE_PLUGIN_ROOT}/scripts/pr-post.js" --dir <dir> --post`. The review event is always `COMMENT`; approving or requesting changes stays a human decision. Report the review URL.
-7. **Clean up** the scratch folder (it is in the OS temp dir).
+7. **Clean up** the scratch folder: `node "${CLAUDE_PLUGIN_ROOT}/scripts/cleanup.js" --dir <dir> --apply`. It only removes a `swiftcraft-pr-<n>-<random>` folder directly in the OS temp dir and refuses anything else. Run it without `--dir` and without `--apply` to see old leftovers (a dry run).
 
 ## Rules
 
