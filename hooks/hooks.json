@@ -16,7 +16,26 @@
         ]
       }
     ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          { "type": "command", "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/scripts/prompt-guard.js\"", "timeout": 5 }
+        ]
+      }
+    ],
     "PreToolUse": [
+      {
+        "matcher": "Read|Grep",
+        "hooks": [
+          { "type": "command", "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/scripts/read-guard.js\"", "timeout": 5 }
+        ]
+      },
+      {
+        "matcher": "Write|Edit|MultiEdit",
+        "hooks": [
+          { "type": "command", "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/scripts/settings-guard.js\"", "timeout": 5 }
+        ]
+      },
       {
         "matcher": "Bash|PowerShell",
         "hooks": [
