@@ -268,4 +268,4 @@ function prBody({ cwd, base, validation }) {
   return { body: redact(o.join("\n")) };
 }
 
-module.exports = { plan, formatPlan, checkMessage, validate, prBody, ADVISORY_LINES };
+module.exports = { plan, formatPlan, checkMessage, validate, prBody, ADVISORY_LINES, workingChanges, repoRoot };
