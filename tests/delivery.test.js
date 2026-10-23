@@ -50,6 +50,12 @@ test("risk: docs only is low, code with tests is medium, code without tests flag
   assert.deepStrictEqual(assess([f("src/a.js"), f("tests/a.test.js")]), assess([f("src/a.js"), f("tests/a.test.js")]), "deterministic");
 });
 
+test("risk: pages and media are not security code even when their name says guard", () => {
+  const f = (p) => ({ path: p, added: 5, removed: 0 });
+  assert.strictEqual(assess([f("src/05c-guard-delivery-review.html"), f("assets/auth-flow.svg")]).items.length, 0);
+  assert.strictEqual(assess([f("src/guard.js"), f("tests/guard.test.js")]).tier, "high", "code named guard stays sensitive");
+});
+
 // --- plan -------------------------------------------------------------------------------------------------------
 test("plan: groups files into reviewable units, pairs tests with their code, excludes generated files from the line count", () => {
   const dir = repo();

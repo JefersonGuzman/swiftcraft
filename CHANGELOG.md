@@ -5,6 +5,9 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versioning: [S
 
 ## [Unreleased]
 
+### Fixed
+- The path-based risk heuristic no longer treats HTML, CSS, SVG and other media as security code because their file name contains "guard" or "auth" (it made the review reminder fire on documentation pages).
+
 ### Added
 - **Three more guards, from a review of the hook events** (`docs/hooks.md` records the decision for every event): `prompt-guard` (UserPromptSubmit) blocks a prompt that contains a token or private key before it reaches the model, without repeating it (escape hatch `SWIFTCRAFT_NO_PROMPT_SCAN=1`); `read-guard` (PreToolUse Read and Grep) asks before a secret or credential file (`.env`, keys, `.npmrc`, `.netrc`, `.aws/credentials`) is read, closing the gap left by the shell-only command guard; `settings-guard` (PreToolUse Write, Edit, MultiEdit) asks before `.claude/settings*.json` is changed, since hooks and permissions live there. Secret-file detection is shared with `protect-files` (`scripts/lib/secrets.js`). Covered by tests with simulated input; not observed in a live interactive session.
 

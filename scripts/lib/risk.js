@@ -10,6 +10,8 @@ const DOC_RE = /\.(md|mdx|rst|txt)$|(^|\/)docs?\//i;
 const LOCK_RE = /(^|\/)(package-lock\.json|npm-shrinkwrap\.json|yarn\.lock|pnpm-lock\.yaml|Cargo\.lock|go\.sum|poetry\.lock|Pipfile\.lock|composer\.lock|Gemfile\.lock|bun\.lockb?)$/;
 const GENERATED_RE = /(^|\/)(dist|build|coverage|node_modules|\.next|out)\/|\.min\.(js|css)$|\.map$/;
 
+const STATIC_ASSET_RE = /\.(html?|css|svg|png|jpe?g|gif|webp|ico|mp4|webm|woff2?)$/i;
+
 const RULES = [
   { n: 1, why: "data or irreversible effects", re: /(^|\/)(migrations?|db\/migrate)\/|\.sql$/i },
   { n: 2, why: "security", re: /(^|\/)(auth|authn|authz|security|crypto|permissions?|rbac|oauth|secrets?|credentials?)(\/|\.|$)|guard|(^|\/)\.env/i },
@@ -26,6 +28,7 @@ const isCode = (p) => CODE_EXT.test(norm(p)) && !isTest(p) && !isGenerated(p);
 // Which ODD items a single path names (lockfiles count as dependencies, item 5).
 function itemsFor(p) {
   const f = norm(p);
+  if (STATIC_ASSET_RE.test(f)) return []; // pages and media are not executable: a "guard" in the name is not security code
   const out = RULES.filter((r) => r.re.test(f)).map((r) => ({ n: r.n, why: r.why }));
   if (LOCK_RE.test(f) && !out.some((i) => i.n === 5)) out.push({ n: 5, why: "delivery or environment" });
   return out;
