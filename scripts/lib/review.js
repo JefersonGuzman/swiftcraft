@@ -87,4 +87,4 @@ function buildReview(input, diffText, headSha) {
   };
 }
 
-module.exports = { buildReview, redact, validate, MAX_INLINE, SEVERITIES };
+module.exports = { buildReview, redact, validate, MAX_INLINE, SEVERITIES, SECRET_PATTERNS };
