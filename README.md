@@ -4,7 +4,7 @@
 
 A small Claude Code plugin that keeps vibe coding fast **and** organized: size-first workflow (ODD), architecture guardrails, test-first loop, written decisions, fresh-context review.
 
-Stack-agnostic. Lean on purpose: 12 skills, 4 agents, 13 commands, 8 hooks, about 950 tokens of always-on context (`claude plugin details swiftcraft@swiftcraft`).
+Stack-agnostic. Lean on purpose: 13 skills, 4 agents, 15 commands, 8 hooks, about 950 tokens of always-on context (`claude plugin details swiftcraft@swiftcraft`).
 
 ![The swiftcraft visual guide: "Vibe coding rápido, pero con oficio."](docs/img/guide-hero.jpg)
 
@@ -49,6 +49,8 @@ If you installed with `--plugin-dir`, update by running `git pull` in the harnes
 | 1 | `/swiftcraft:odd <request>` | Runs the ODD protocol: stays read-only unless you ask for a change, explores, **sizes the work** (small = straight to a test, no paperwork; large = a feature document `odd/tasks/<feature>.md` with your exact words), then implements task by task |
 | 2 | `/swiftcraft:build` | One task, RED → GREEN → REFACTOR, then stop, with a Risk line |
 | 3 | `/swiftcraft:review` | Fresh-context diff review, verdict |
+| 4 | `/swiftcraft:commit` | Plans reviewable commit units (a test travels with its code, sensitive areas alone, ~400 lines advisory), checks branch and Conventional Commit messages (no AI attribution), commits one unit at a time after you confirm |
+| 5 | `/swiftcraft:pr` | Runs the project's own test/lint/build commands, drafts a PR description with task-to-commit traceability, real results and risk lines; pushes or opens the PR only after you confirm |
 | — | `/swiftcraft:status` | Where the active feature stands: a state (`working`, `checking`, `ready`, `needs-decision`), the reason and the single next action, derived only from the feature document |
 | — | `/swiftcraft:doctor` | Read-only diagnosis of the install and the project: `OK` / `WARNING` / `ERROR` with a fix for each; optional tools (gh, Claude CLI, Engram, RTK) only warn |
 | — | `/swiftcraft:adr <topic>` | Decision record in `docs/adr/` |
@@ -60,7 +62,7 @@ If you installed with `--plugin-dir`, update by running `git pull` in the harnes
 
 ## What's inside
 
-- **Skills**: `project-start`, `architecture-guard`, `odd`, `tdd-loop`, `adr`, `review-gate`, `context-hygiene`, `memory`, `token-saver`, `ui-design`, `pr-review`, `adopt`.
+- **Skills**: `project-start`, `architecture-guard`, `odd`, `tdd-loop`, `adr`, `review-gate`, `context-hygiene`, `memory`, `token-saver`, `ui-design`, `pr-review`, `adopt`, `delivery`.
 - **Agents**: `architect` (design), `reviewer` (diff review), `explorer` (compact code maps), `pr-reviewer` (PR findings as JSON). All read-only; `pr-reviewer` has no shell at all.
 - **Hooks**
   - `SessionStart`: injects `docs/constitution.md`; shows the active feature document (progress, next task) and restores its open tasks after compaction.
