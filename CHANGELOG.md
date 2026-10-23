@@ -5,6 +5,8 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versioning: [S
 
 ## [Unreleased]
 
+## [0.6.1] - 2026-10-23
+
 ### Fixed
 - The path-based risk heuristic no longer treats HTML, CSS, SVG and other media as security code because their file name contains "guard" or "auth" (it made the review reminder fire on documentation pages).
 
