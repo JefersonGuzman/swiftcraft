@@ -6,6 +6,7 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versioning: [S
 ## [Unreleased]
 
 ### Added
+- `/swiftcraft:doctor` (`scripts/doctor.js`, `--json`, `--project`, `--root`): read-only diagnosis with `OK` / `WARNING` / `ERROR` and a fix for each. Required parts (Node.js 18+, plugin manifest, hooks configuration, scripts, hook smoke tests) are errors; optional tools (GitHub CLI, Claude CLI, Engram, RTK) only warn; project checks cover initialization, feature documents, old pull-request scratch folders and stale state files. Exit code 1 only when there is an error; it never changes or deletes anything.
 - Deterministic next step: `node scripts/odd.js status [--json]` and `/swiftcraft:status` now report one of four states (`working`, `checking`, `ready`, `needs-decision`) with the reason and the single next action, derived only from the feature document. A malformed, empty or undecided document is `needs-decision`; the state is never guessed. A `Closed:` Log entry marks a verified feature. Session start shows the same state and action.
 
 ### Fixed
