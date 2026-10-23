@@ -5,20 +5,9 @@
 //   { "domainForbidden": ["regex", ...], "applicationForbidden": ["regex", ...] }
 const fs = require("fs");
 const path = require("path");
+const { loadRules } = require("../../scripts/lib/arch.js");
 
 const SRC = /\.(ts|tsx|js|jsx|mjs|cjs|py|go|java|kt|cs)$/;
-
-const DEFAULTS = {
-  domainForbidden: [
-    "(^|[\\/\\\"'.])(infrastructure|adapters?|presentation|ui|controllers?)([\\/\\\"'.]|$)",
-    "from\\s+['\"](react|next|express|fastify|@nestjs/|prisma|@prisma/|mongoose|typeorm|axios|fs|node:fs)",
-    "^\\s*(import|from)\\s+(django|flask|fastapi|sqlalchemy|requests)",
-  ],
-  applicationForbidden: [
-    "(^|[\\/\\\"'.])(infrastructure|adapters?|presentation|ui|controllers?)([\\/\\\"'.]|$)",
-    "from\\s+['\"](react|next|express|fastify|@nestjs/|prisma|@prisma/|mongoose|typeorm)",
-  ],
-};
 
 let raw = "";
 process.stdin.on("data", (c) => (raw += c));
@@ -35,11 +24,7 @@ process.stdin.on("end", () => {
   const layer = /\/domain\//.test(norm) ? "domain" : /\/application\//.test(norm) ? "application" : null;
   if (!layer) process.exit(0);
 
-  let rules = DEFAULTS;
-  try {
-    const custom = path.join(process.cwd(), "docs", "arch-rules.json");
-    if (fs.existsSync(custom)) rules = { ...DEFAULTS, ...JSON.parse(fs.readFileSync(custom, "utf8")) };
-  } catch {}
+  const rules = loadRules(process.cwd());
 
   const patterns = (layer === "domain" ? rules.domainForbidden : rules.applicationForbidden).map((r) => new RegExp(r, "i"));
   const hits = [];
