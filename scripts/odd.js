@@ -1,33 +1,42 @@
 #!/usr/bin/env node
 // ODD feature documents (odd/tasks/<feature-name>.md).
-//   node odd.js status [file]   progress, next task, pending decisions (default: the active document)
-//   node odd.js check <file>    validate the document; exit 1 and list the problems if it is malformed
+//   node odd.js status [file] [--json]   state, reason, next action, progress (default: the active document)
+//   node odd.js check <file>             validate the document; exit 1 and list the problems if it is malformed
 const fs = require("fs");
 const path = require("path");
-const { checkFeatureDoc, statusOf, findActiveDoc } = require("./lib/odd.js");
+const { checkFeatureDoc, statusOf, nextStep, findActiveDoc } = require("./lib/odd.js");
 
-const [cmd, arg] = process.argv.slice(2);
+const args = process.argv.slice(2);
+const cmd = args[0];
+const json = args.includes("--json");
+const arg = args.slice(1).find((a) => !a.startsWith("--"));
 
 function status() {
   let file;
   let rel;
-  let st;
   if (arg) {
     file = path.resolve(arg);
     rel = arg;
-    st = statusOf(fs.readFileSync(file, "utf8"));
   } else {
     const active = findActiveDoc(process.cwd());
-    if (!active) return console.log("No feature document in odd/tasks/. Small tasks need none; large ones get one from /swiftcraft:odd.");
+    if (!active) {
+      if (json) return console.log(JSON.stringify({ state: "none", reason: "No feature document in odd/tasks/", action: "Small tasks need none; large ones get one from /swiftcraft:odd." }));
+      return console.log("No feature document in odd/tasks/. Small tasks need none; large ones get one from /swiftcraft:odd.");
+    }
     file = active.file;
     rel = active.rel;
-    st = active.status;
   }
-  const problems = checkFeatureDoc(fs.readFileSync(file, "utf8"));
+  const text = fs.readFileSync(file, "utf8");
+  const st = statusOf(text);
+  const step = nextStep(text);
+  if (json) {
+    return console.log(JSON.stringify({ file: rel, title: st.title, state: step.state, reason: step.reason, action: step.action, done: st.done, total: st.total, nextTask: step.next ? step.next.id : null, problems: step.problems, needsDecision: st.needsDecision }));
+  }
   console.log(`Feature: ${st.title || path.basename(file, ".md")}  (${rel})`);
+  console.log(`State: ${step.state}`);
+  console.log(`Reason: ${step.reason}`);
+  console.log(`Next action: ${step.action}`);
   console.log(`Progress: ${st.done}/${st.total} tasks done`);
-  if (st.next) console.log(`Next: ${st.next.id} (${st.next.specs.join(",")}) ${st.next.outcome} — route: ${st.next.route || "?"}`);
-  else console.log("Next: none, every task is ticked. Close the feature: run the full suite, review, report.");
   if (st.open.length > 1) {
     console.log("Open tasks:");
     for (const t of st.open) console.log(`  - ${t.id} ${t.outcome}`);
@@ -36,7 +45,7 @@ function status() {
     console.log("Needs your decision:");
     for (const d of st.needsDecision) console.log(`  - ${d}`);
   }
-  console.log(problems.length ? `Problems: ${problems.length} (run: node odd.js check ${rel})` : "Problems: none");
+  console.log(step.problems ? `Problems: ${step.problems} (run: node odd.js check ${rel})` : "Problems: none");
 }
 
 function check() {
@@ -64,6 +73,6 @@ function check() {
 if (cmd === "status") status();
 else if (cmd === "check") check();
 else {
-  console.error("Usage: node odd.js status [file] | node odd.js check <file>");
+  console.error("Usage: node odd.js status [file] [--json] | node odd.js check <file>");
   process.exit(1);
 }

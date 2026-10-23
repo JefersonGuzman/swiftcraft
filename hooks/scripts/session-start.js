@@ -5,7 +5,8 @@
 // active feature document); the memory plugin handles memory recovery.
 const fs = require("fs");
 const path = require("path");
-const { findActiveDoc } = require("../../scripts/lib/odd.js");
+const fs2 = require("fs");
+const { findActiveDoc, nextStep } = require("../../scripts/lib/odd.js");
 
 const compact = process.argv.includes("--compact");
 const cwd = process.cwd();
@@ -19,8 +20,13 @@ const active = findActiveDoc(cwd);
 function activeSummary() {
   if (!active) return "";
   const s = active.status;
-  const next = s.next ? `; next: ${s.next.id} (${s.next.specs.join(",")}) ${s.next.outcome}` : "; all tasks ticked";
-  return `Active feature: ${active.rel} — ${s.done}/${s.total} tasks done${next}. Resume with /swiftcraft:status.\n`;
+  let step;
+  try {
+    step = nextStep(fs2.readFileSync(active.file, "utf8"));
+  } catch {
+    return "";
+  }
+  return `Active feature: ${active.rel} — ${s.done}/${s.total} tasks done, state: ${step.state}. Next action: ${step.action}. Resume with /swiftcraft:status.\n`;
 }
 
 if (compact) {

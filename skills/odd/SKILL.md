@@ -55,6 +55,17 @@ Rules:
 - Mirror the full document to memory under the topic `odd/<feature-name>/tasks` (see skill `memory`). Write the local file first, read both back, and mark the mirror pending if memory is unavailable; never claim success you did not observe.
 - **Resume** an interrupted feature with `/swiftcraft:status`: memory context, then a search scoped to the project and feature, then the full saved document, then the actual file; reconcile with the code and `git log` before the next task.
 
+## The next step is derived from the document
+
+`/swiftcraft:status` (`node scripts/odd.js status [--json]`) computes the state from the feature document alone, so any session can resume without relying on conversation memory. The same output is shown at session start.
+
+| State | When | The one next action |
+|-------|------|---------------------|
+| `needs-decision` | The document is malformed, has no tasks, or lists open items under `## Needs your decision`. The state is never guessed. | Fix the document or resolve the decision |
+| `working` | At least one task is open | `/swiftcraft:build <next task>` |
+| `checking` | Every task is ticked but the Log has no `Closed:` entry | Run the full suite and `/swiftcraft:review`, then add a Log entry starting with `Closed:` (verified outcome and Risk line) |
+| `ready` | Every task is ticked and the Log has a `Closed:` entry | Deliver in reviewable commits; push, PR and merge stay the user's decision |
+
 ## Implement: pick the route
 
 Every authorized change takes exactly one route. **Inline is the default**: you write it yourself, following the feature document. Delegate only for a **named reason**:

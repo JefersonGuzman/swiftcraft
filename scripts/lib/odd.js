@@ -107,6 +107,35 @@ function statusOf(text) {
   return { title: d.title, total: d.tasks.length, done: d.tasks.length - open.length, open, next: open[0] || null, needsDecision: d.needsDecision };
 }
 
+// The single next step, derived only from the document (no conversation memory). Four states:
+//   needs-decision  the document is malformed, incomplete or lists open decisions: never guess a state
+//   working         there are open tasks: build the next one
+//   checking        every task is ticked but the feature has no "Closed:" log entry: full suite + review
+//   ready           every task is ticked and the Log has a "Closed:" entry: deliver (the user decides push/PR/merge)
+function nextStep(text) {
+  const problems = checkFeatureDoc(text);
+  const st = statusOf(text);
+  const d = parseFeatureDoc(text);
+  const base = { done: st.done, total: st.total, next: st.next, problems: problems.length };
+  if (problems.length) {
+    return { ...base, state: "needs-decision", reason: `The document has ${problems.length} problem(s): ${problems[0]}`, action: "Fix the document (node odd.js check <file>) or decide how to resolve it." };
+  }
+  if (st.needsDecision.length) {
+    return { ...base, state: "needs-decision", reason: `${st.needsDecision.length} open decision(s)`, action: `Resolve: ${st.needsDecision[0]}` };
+  }
+  if (!st.total) {
+    return { ...base, state: "needs-decision", reason: "The document has no tasks yet", action: "Add the tasks (each linked to a spec S#) before implementing." };
+  }
+  if (st.next) {
+    return { ...base, state: "working", reason: `${st.open.length} of ${st.total} tasks are open`, action: `/swiftcraft:build ${st.next.id}: ${st.next.outcome}` };
+  }
+  const closed = d.log.some((l) => /^(\([^)]*\)\s*)?closed:/i.test(l.text));
+  if (!closed) {
+    return { ...base, state: "checking", reason: "Every task is ticked but the feature is not closed", action: "Run the full suite and /swiftcraft:review, then add a Log entry starting with \"Closed:\" with the verified outcome and the Risk line." };
+  }
+  return { ...base, state: "ready", reason: "Every task is ticked and the feature is closed", action: "Deliver in reviewable commits; push, pull request and merge stay your decision." };
+}
+
 // The feature document to resume: the most recently modified one that still has open tasks, else the latest.
 function findActiveDoc(cwd) {
   const dir = path.join(cwd, "odd", "tasks");
@@ -127,4 +156,4 @@ function findActiveDoc(cwd) {
   return files.length ? { ...files[0], status: statusOf(fs.readFileSync(files[0].file, "utf8")) } : null;
 }
 
-module.exports = { parseFeatureDoc, checkFeatureDoc, statusOf, findActiveDoc };
+module.exports = { parseFeatureDoc, checkFeatureDoc, statusOf, nextStep, findActiveDoc };

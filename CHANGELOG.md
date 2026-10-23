@@ -5,6 +5,9 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versioning: [S
 
 ## [Unreleased]
 
+### Added
+- Deterministic next step: `node scripts/odd.js status [--json]` and `/swiftcraft:status` now report one of four states (`working`, `checking`, `ready`, `needs-decision`) with the reason and the single next action, derived only from the feature document. A malformed, empty or undecided document is `needs-decision`; the state is never guessed. A `Closed:` Log entry marks a verified feature. Session start shows the same state and action.
+
 ### Fixed
 - Plugin, Codex and marketplace descriptions still said "spec-first"; they now describe the ODD workflow (a test keeps them in sync).
 
