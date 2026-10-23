@@ -126,7 +126,7 @@ const scratch = entries
   .map((e) => e.name);
 if (scratch.length) {
   const shown = scratch.slice(0, 5).join(", ") + (scratch.length > 5 ? `, … (+${scratch.length - 5} more)` : "");
-  add("WARNING", "Scratch folders", `${scratch.length} pull-request scratch folder(s) older than 24 h in ${TMP}: ${shown}`, "They are safe to delete by hand; this command never deletes anything");
+  add("WARNING", "Scratch folders", `${scratch.length} pull-request scratch folder(s) older than 24 h in ${TMP}: ${shown}`, "See them with: node scripts/cleanup.js (dry run), delete with --apply. This command itself never deletes anything");
 } else add("OK", "Scratch folders", "no old pull-request scratch folders");
 
 const stateFiles = entries

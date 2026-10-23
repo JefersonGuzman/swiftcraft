@@ -43,6 +43,7 @@ try {
   });
   const res = JSON.parse(out);
   console.log(`Posted review ${res.id || ""} on ${repo}#${number}: ${res.html_url || "(no url returned)"}`);
+  console.log(`Scratch folder kept: ${dir}\nRemove it when you are done: node "${path.join(__dirname, "cleanup.js")}" --dir "${dir}" --apply`);
 } catch (e) {
   console.error(`pr-post failed: ${(e.stderr || e.message || "").toString().trim().split("\n")[0]}`);
   process.exit(1);
