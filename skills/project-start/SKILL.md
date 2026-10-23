@@ -5,7 +5,7 @@ description: Scaffold a new project with the swiftcraft structure (constitution,
 
 # project-start
 
-Goal: a new project that is structured from commit zero.
+Goal: a new project that is structured from commit zero. **If the project already has code, use `/swiftcraft:adopt` instead**: it analyzes what exists (read-only) and proposes documents without touching your code.
 
 ## Process
 
