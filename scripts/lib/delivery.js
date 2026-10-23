@@ -226,6 +226,16 @@ function validate(root, commands) {
   return { validated: results.length > 0, results };
 }
 
+// [{ path, added, removed }] for the commits on the current branch beyond `baseRef`.
+function branchChanges(root, baseRef) {
+  const files = [];
+  for (const line of git(["diff", `${baseRef}...HEAD`, "--numstat", "--no-renames"], root).out.split("\n")) {
+    const m = line.match(/^(\d+|-)\t(\d+|-)\t(.+)$/);
+    if (m) files.push({ path: m[3], added: m[1] === "-" ? 0 : +m[1], removed: m[2] === "-" ? 0 : +m[2] });
+  }
+  return files;
+}
+
 function prBody({ cwd, base, validation }) {
   const root = repoRoot(cwd);
   if (!root) return { error: "Not a git repository." };
@@ -238,11 +248,7 @@ function prBody({ cwd, base, validation }) {
     return { hash, subject, body: body || "" };
   });
   if (!log.length) return { error: `No commits on ${branch} beyond ${baseRef}: there is nothing to open a pull request for.` };
-  const files = [];
-  for (const line of git(["diff", `${baseRef}...HEAD`, "--numstat", "--no-renames"], root).out.split("\n")) {
-    const m = line.match(/^(\d+|-)\t(\d+|-)\t(.+)$/);
-    if (m) files.push({ path: m[3], added: m[1] === "-" ? 0 : +m[1], removed: m[2] === "-" ? 0 : +m[2] });
-  }
+  const files = branchChanges(root, baseRef);
   const risk = assess(files.filter((f) => !isGenerated(f.path) || itemsFor(f.path).length));
   const active = findActiveDoc(root);
   const tasks = active ? parseFeatureDoc(fs.readFileSync(active.file, "utf8")).tasks : [];
@@ -271,4 +277,4 @@ function prBody({ cwd, base, validation }) {
   return { body: redact(o.join("\n")) };
 }
 
-module.exports = { plan, formatPlan, checkMessage, validate, prBody, ADVISORY_LINES, workingChanges, repoRoot };
+module.exports = { plan, formatPlan, checkMessage, validate, prBody, ADVISORY_LINES, workingChanges, branchChanges, repoRoot, git };
