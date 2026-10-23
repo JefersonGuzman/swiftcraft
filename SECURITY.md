@@ -18,6 +18,18 @@ Include what you found, how to reproduce it, and the version (`/swiftcraft:updat
 - **PR review** uses your authenticated GitHub CLI. It only reads until you confirm; it posts a single `COMMENT` review, never approves or merges. The review agent has no shell or write tools, and PR text is treated as untrusted data.
 - **Optional setup** (`scripts/setup-engram.js --apply`, `--with-rtk`) installs third-party software only when you run it with those flags.
 
+## Command guard: what it does and what it does not
+
+The `PreToolUse` command guard (Bash and PowerShell) blocks a short list of catastrophic commands (**deny**) and asks you to confirm a list of risky ones (**ask**); see the README for the tables. Be clear about its limits:
+
+- It analyzes the command **text** statically. It does not expand variables, globs, aliases or scripts it does not see, so it has **false negatives** (something dangerous slips through) and **false positives** (a harmless command is questioned).
+- Known gaps: obfuscated command names (for example `r\m`), writes to system files such as `/etc/passwd`, anything produced by a script or program it cannot read, and variables or globs it cannot expand. It is built to catch accidents, not a determined attacker.
+- It **does not replace** Claude Code's permission rules, sandboxing or the operating system's own controls (file permissions, user accounts, backups). Keep those in place.
+- Deny rules cannot be relaxed by a project file; ask rules can. If you need a denied command, run it yourself in a terminal.
+- Its local log stores only the decision and the rule ids, never the command text.
+
+Report guard bypasses (a dangerous command that is not caught) through the private channel above.
+
 ## Hardening tips
 
 - Review `hooks/hooks.json` and `scripts/` before installing any plugin, including this one.
