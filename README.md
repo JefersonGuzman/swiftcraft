@@ -4,7 +4,7 @@
 
 A small Claude Code plugin that keeps vibe coding fast **and** organized: size-first workflow (ODD), architecture guardrails, test-first loop, written decisions, fresh-context review.
 
-Stack-agnostic. Lean on purpose: 11 skills, 4 agents, 11 commands, 7 hooks, about 950 tokens of always-on context (`claude plugin details swiftcraft@swiftcraft`).
+Stack-agnostic. Lean on purpose: 11 skills, 4 agents, 12 commands, 7 hooks, about 950 tokens of always-on context (`claude plugin details swiftcraft@swiftcraft`).
 
 ![The swiftcraft visual guide: "Vibe coding rápido, pero con oficio."](docs/img/guide-hero.jpg)
 
@@ -48,7 +48,8 @@ If you installed with `--plugin-dir`, update by running `git pull` in the harnes
 | 1 | `/swiftcraft:odd <request>` | Runs the ODD protocol: stays read-only unless you ask for a change, explores, **sizes the work** (small = straight to a test, no paperwork; large = a feature document `odd/tasks/<feature>.md` with your exact words), then implements task by task |
 | 2 | `/swiftcraft:build` | One task, RED → GREEN → REFACTOR, then stop, with a Risk line |
 | 3 | `/swiftcraft:review` | Fresh-context diff review, verdict |
-| — | `/swiftcraft:status` | Where the active feature stands: progress, next task, pending decisions |
+| — | `/swiftcraft:status` | Where the active feature stands: a state (`working`, `checking`, `ready`, `needs-decision`), the reason and the single next action, derived only from the feature document |
+| — | `/swiftcraft:doctor` | Read-only diagnosis of the install and the project: `OK` / `WARNING` / `ERROR` with a fix for each; optional tools (gh, Claude CLI, Engram, RTK) only warn |
 | — | `/swiftcraft:adr <topic>` | Decision record in `docs/adr/` |
 | — | `/swiftcraft:remember <text>` | Save to project memory |
 | — | `/swiftcraft:setup` | Check/install companions (Engram, RTK) |
