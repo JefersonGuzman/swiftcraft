@@ -11,7 +11,7 @@ const http = require("http");
 const https = require("https");
 const os = require("os");
 const path = require("path");
-const { compareVersions, changelogBetween } = require("./lib/version.js");
+const { compareVersions, changelogBetween, isPrerelease } = require("./lib/version.js");
 
 const args = process.argv.slice(2);
 const notice = args.includes("--notice");
@@ -27,9 +27,14 @@ const base = process.env.SWIFTCRAFT_UPDATE_BASE || (repoMatch ? `https://raw.git
 // The latest GitHub release is the primary source: raw.githubusercontent.com is cached for minutes after a
 // release and can still show the old version. When SWIFTCRAFT_UPDATE_BASE is set (tests) the API is skipped
 // unless SWIFTCRAFT_UPDATE_API is also set.
+// Channel: "stable" (default) only sees full releases; "beta" also sees prereleases. Set with SWIFTCRAFT_CHANNEL
+// or updates.channel in swiftcraft.config.json.
+const channel = require("./lib/config.js").loadConfig(process.cwd()).values.updates.channel;
 const apiUrl =
   process.env.SWIFTCRAFT_UPDATE_API ||
-  (!process.env.SWIFTCRAFT_UPDATE_BASE && repoMatch ? `https://api.github.com/repos/${repoMatch[1]}/releases/latest` : null);
+  (!process.env.SWIFTCRAFT_UPDATE_BASE && repoMatch
+    ? `https://api.github.com/repos/${repoMatch[1]}/releases${channel === "beta" ? "?per_page=30" : "/latest"}`
+    : null);
 let releaseNotes = "";
 const cacheFile = path.join(process.env.SWIFTCRAFT_CACHE_DIR || os.tmpdir(), "swiftcraft-update-check.json");
 
@@ -61,18 +66,31 @@ const readCache = () => {
 };
 const writeCache = (latest) => {
   try {
-    fs.writeFileSync(cacheFile, JSON.stringify({ checkedAt: Date.now(), latest }));
+    fs.writeFileSync(cacheFile, JSON.stringify({ checkedAt: Date.now(), latest, channel }));
   } catch {}
 };
+
+// The highest version among published (non-draft) releases; stable ignores prereleases.
+function pickRelease(releases, ch) {
+  let best = null;
+  for (const rel of releases) {
+    if (!rel || rel.draft) continue;
+    const m = String(rel.tag_name || "").match(/(\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?)$/);
+    if (!m) continue;
+    if (ch !== "beta" && (rel.prerelease || isPrerelease(m[1]))) continue;
+    if (!best || compareVersions(m[1], best.version) > 0) best = { version: m[1], rel };
+  }
+  return best;
+}
 
 async function latestVersion(timeoutMs) {
   if (apiUrl) {
     try {
-      const rel = JSON.parse(await get(apiUrl, timeoutMs));
-      const m = String(rel.tag_name || "").match(/(\d+\.\d+\.\d+)$/);
-      if (m) {
-        if (typeof rel.body === "string") releaseNotes = rel.body.trim();
-        return m[1];
+      const data = JSON.parse(await get(apiUrl, timeoutMs));
+      const best = pickRelease(Array.isArray(data) ? data : [data], channel);
+      if (best) {
+        if (typeof best.rel.body === "string") releaseNotes = best.rel.body.trim();
+        return best.version;
       }
     } catch {
       // rate limit, no release yet or offline: fall back to the raw plugin.json below
@@ -95,7 +113,7 @@ async function main() {
   if (notice) {
     let latest = null;
     const cache = readCache();
-    if (cache && Date.now() - cache.checkedAt < DAY) latest = cache.latest;
+    if (cache && (cache.channel || "stable") === channel && Date.now() - cache.checkedAt < DAY) latest = cache.latest;
     else {
       try {
         latest = await latestVersion(2500);

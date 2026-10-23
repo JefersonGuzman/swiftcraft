@@ -21,7 +21,7 @@ test("without a file the defaults apply and every source says so", () => {
   assert.strictEqual(c.file, null);
   assert.deepStrictEqual(c.values, DEFAULTS);
   assert.strictEqual(c.sources["memory.nudge"], "default");
-  assert.deepStrictEqual(DEFAULTS, { memory: { nudge: true, nudgeEdits: 3 }, review: { reminder: true }, updates: { check: true }, delivery: { advisoryLines: 400 } });
+  assert.deepStrictEqual(DEFAULTS, { memory: { nudge: true, nudgeEdits: 3 }, review: { reminder: true }, updates: { check: true, channel: "stable" }, delivery: { advisoryLines: 400 } });
 });
 
 test("precedence is default < project file < environment", () => {
