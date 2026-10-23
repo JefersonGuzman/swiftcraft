@@ -40,6 +40,12 @@
         ]
       },
       {
+        "matcher": "Agent|Task|Skill",
+        "hooks": [
+          { "type": "command", "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/scripts/review-track.js\"", "timeout": 10 }
+        ]
+      },
+      {
         "matcher": "mcp__.*mem_(save|update|session_summary)$",
         "hooks": [
           { "type": "command", "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/scripts/memory-track.js\"", "timeout": 5 }
@@ -49,6 +55,7 @@
     "Stop": [
       {
         "hooks": [
+          { "type": "command", "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/scripts/review-reminder.js\"", "timeout": 10 },
           { "type": "command", "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/scripts/memory-nudge.js\"", "timeout": 10 }
         ]
       }
