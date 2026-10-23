@@ -61,6 +61,10 @@ If you installed with `--plugin-dir`, update by running `git pull` in the harnes
 | — | `/swiftcraft:update` | Check for a newer version, see what changed, get the update commands |
 | — | `/swiftcraft:pr-review <n\|url>` | Review a GitHub PR against your constitution, feature documents and architecture; posts comments only after you confirm |
 
+## Output styles (optional)
+
+Two styles ship with the plugin and none is on by default: `swiftcraft-lean` (result first, no preamble; full detail kept for errors, risks and confirmations) and `swiftcraft-explained` (a short *why* after each change). Pick one with `/output-style` (or the `outputStyle` setting). They change tone and length only: tests, permissions, hooks and the ODD protocol are unaffected.
+
 ## Configuration (optional)
 
 Put a `swiftcraft.config.json` at the project root to tune low-stakes behavior. Precedence: defaults < project file < environment variables. `node scripts/config.js show` prints the effective values and where each one comes from; `/swiftcraft:doctor` validates the file.

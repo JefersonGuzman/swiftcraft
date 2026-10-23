@@ -12,3 +12,4 @@ description: Keep the session lean and resumable. Use in long sessions, before b
 - **Checkpoint before compaction or stopping:** update the feature document, note the next step in one line, list unverified claims.
 - **Don't repeat settled decisions.** Re-read the ADR instead of re-debating.
 - **Prefer short answers.** Expand only when asked.
+- **Library and framework documentation.** If a documentation MCP is available in the session (check the tool list; never assume one exists), use it for current APIs of libraries and frameworks instead of memory. In your answer, separate "Consulted: <source>" from "From general knowledge (not verified against current docs)". With no documentation tool, say the API detail comes from general knowledge and suggest checking the official docs for anything version-sensitive.
