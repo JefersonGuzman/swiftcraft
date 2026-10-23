@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 // Stop: if the working tree has changes to sensitive areas (data, security, contracts, delivery) and no review of
 // exactly that diff happened in this session, block the stop ONCE per diff and ask for /swiftcraft:review.
-// Loop-safe (stop_hook_active). Opt out with SWIFTCRAFT_NO_REVIEW_REMINDER=1. Any failure lets the session end.
+// Loop-safe (stop_hook_active). Opt out with SWIFTCRAFT_NO_REVIEW_REMINDER=1 or review.reminder in
+// swiftcraft.config.json. Any failure lets the session end.
 const { sensitiveState, readState, writeState } = require("../../scripts/lib/review-evidence.js");
-
-if (process.env.SWIFTCRAFT_NO_REVIEW_REMINDER === "1") process.exit(0);
+const { loadConfig } = require("../../scripts/lib/config.js");
 
 let raw = "";
 process.stdin.on("data", (c) => (raw += c));
@@ -12,6 +12,7 @@ process.stdin.on("end", () => {
   try {
     const input = JSON.parse(raw);
     if (input.stop_hook_active) process.exit(0);
+    if (!loadConfig(input.cwd || process.cwd()).values.review.reminder) process.exit(0);
     const s = sensitiveState(input.cwd || process.cwd());
     if (!s || !s.files.length) process.exit(0);
     const st = readState(input.session_id);

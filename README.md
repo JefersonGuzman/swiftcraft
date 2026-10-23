@@ -60,6 +60,30 @@ If you installed with `--plugin-dir`, update by running `git pull` in the harnes
 | — | `/swiftcraft:update` | Check for a newer version, see what changed, get the update commands |
 | — | `/swiftcraft:pr-review <n\|url>` | Review a GitHub PR against your constitution, feature documents and architecture; posts comments only after you confirm |
 
+## Configuration (optional)
+
+Put a `swiftcraft.config.json` at the project root to tune low-stakes behavior. Precedence: defaults < project file < environment variables. `node scripts/config.js show` prints the effective values and where each one comes from; `/swiftcraft:doctor` validates the file.
+
+```json
+{
+  "version": 1,
+  "memory": { "nudge": true, "nudgeEdits": 3 },
+  "review": { "reminder": true },
+  "updates": { "check": true },
+  "delivery": { "advisoryLines": 400 }
+}
+```
+
+| Setting | Meaning | Environment override |
+|---------|---------|----------------------|
+| `memory.nudge` | Ask to save memory at the end of a session with edits | `SWIFTCRAFT_NO_NUDGE=1` |
+| `memory.nudgeEdits` | Edits (1-100) before that reminder | `SWIFTCRAFT_NUDGE_EDITS` |
+| `review.reminder` | Ask for `/swiftcraft:review` once per sensitive diff | `SWIFTCRAFT_NO_REVIEW_REMINDER=1` |
+| `updates.check` | Notice of a newer release at session start | `SWIFTCRAFT_NO_UPDATE_CHECK=1` |
+| `delivery.advisoryLines` | Advisory size (50-5000) for a commit unit; never a cap | none |
+
+Some controls are mandatory and **not configurable**: the command guard's deny rules and protected files. The file is rejected (with the reason) if it names them, has unknown keys, wrong types, or anything that looks like a secret; while it is rejected the defaults apply. Extra guard rules live in `docs/guard-rules.json`.
+
 ## What's inside
 
 - **Skills**: `project-start`, `architecture-guard`, `odd`, `tdd-loop`, `adr`, `review-gate`, `context-hygiene`, `memory`, `token-saver`, `ui-design`, `pr-review`, `adopt`, `delivery`.
