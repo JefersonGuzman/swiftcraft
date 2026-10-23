@@ -4,7 +4,7 @@
 
 A small Claude Code plugin that keeps vibe coding fast **and** organized: size-first workflow (ODD), architecture guardrails, test-first loop, written decisions, fresh-context review.
 
-Stack-agnostic. Lean on purpose: 11 skills, 4 agents, 12 commands, 7 hooks, about 950 tokens of always-on context (`claude plugin details swiftcraft@swiftcraft`).
+Stack-agnostic. Lean on purpose: 11 skills, 4 agents, 12 commands, 8 hooks, about 950 tokens of always-on context (`claude plugin details swiftcraft@swiftcraft`).
 
 ![The swiftcraft visual guide: "Vibe coding rápido, pero con oficio."](docs/img/guide-hero.jpg)
 
@@ -63,7 +63,8 @@ If you installed with `--plugin-dir`, update by running `git pull` in the harnes
 - **Agents**: `architect` (design), `reviewer` (diff review), `explorer` (compact code maps), `pr-reviewer` (PR findings as JSON). All read-only; `pr-reviewer` has no shell at all.
 - **Hooks**
   - `SessionStart`: injects `docs/constitution.md`; shows the active feature document (progress, next task) and restores its open tasks after compaction.
-  - `PreToolUse`: blocks writes to `.env`, keys and certificates.
+  - `PreToolUse` protect-files: blocks writes to `.env`, keys and certificates.
+  - `PreToolUse` command guard (Bash and PowerShell): blocks catastrophic commands and asks for confirmation on risky ones (see below).
   - `PostToolUse` `odd-lint`: validates a feature document whenever `odd/tasks/<feature>.md` is written (every task links a spec, every spec is covered, `L1` is the original request, ticked tasks record a commit or evidence) and feeds problems back.
   - `PostToolUse` `arch-lint`: flags framework/outer-layer imports inside `domain/` and `application/` (override with `docs/arch-rules.json`).
   - `SessionStart` update notice: at most once a day it compares your version with the one on GitHub and tells you if a newer one exists (opt out: `SWIFTCRAFT_NO_UPDATE_CHECK=1`).
@@ -92,6 +93,33 @@ The `memory` skill and `/swiftcraft:remember` use [Engram](https://github.com/Ge
 - **Codex / OpenCode / Cursor / Gemini / Copilot** read `AGENTS.md` (open standard). `/swiftcraft:export` generates `.cursor/rules/swiftcraft.mdc`, `GEMINI.md` and `.github/copilot-instructions.md` from it.
 - `.codex-plugin/plugin.json` exposes the same `skills/` to Codex. Skills are plain `SKILL.md` folders and can be copied to any agent that reads them.
 - Hooks, slash commands and agents are Claude Code features. The Codex manifest and the Cursor/Gemini/Copilot exports were written from public docs and are **not yet tested** in those tools.
+
+## Command guard
+
+A `PreToolUse` hook inspects every shell command before it runs and answers with one of three outcomes:
+
+| Outcome | Meaning | Examples |
+|---------|---------|----------|
+| **deny** | Blocked. It cannot be confirmed through the plugin; run it yourself in a terminal if you really mean it. | `rm -rf /`, `rm -rf ~`, deleting a drive or a system folder, `mkfs`, `dd of=/dev/sda`, fork bomb, force-push or delete of `main`/`master`, writing `.env` / `*.pem` / `id_rsa` through the shell |
+| **ask** | Claude Code asks you to confirm. | recursive delete outside the project or with a target it cannot verify (`..`, `~`, variables, wildcards), `git reset --hard`, `git clean -f`, other force pushes, reading `.env` or private keys, `curl … \| sh`, `DROP TABLE`, `chmod -R 777`, `npm publish`, `gh repo delete` |
+| *(silence)* | No opinion: the normal permission flow applies. Silence is **not** an approval. | everything else |
+
+It understands quoting, `&&` / `;` / `|` chaining, `$(…)`, backticks, `bash -c`, `eval`, `sudo`/`xargs` wrappers and redirections. Simple relative deletes (`rm -rf node_modules`, `rm -rf dist`) and paths inside the project or the temp folder pass without a question.
+
+**Project rules** (optional, `docs/guard-rules.json`): add your own `ask` / `deny` rules, relax `ask` rules by id (`disableAsk`) or by pattern (`allow`). `deny` rules can never be relaxed by a project.
+
+```json
+{
+  "disableAsk": ["git-history-loss"],
+  "allow": ["^rm -rf /var/cache/myapp$"],
+  "ask": [{ "id": "deploy", "pattern": "^deploy\\b", "reason": "production deploy" }],
+  "deny": [{ "id": "tf-destroy", "pattern": "terraform destroy", "reason": "never destroy infrastructure from the agent" }]
+}
+```
+
+A local log (`swiftcraft-guard.log` in the temp folder, last 200 lines) keeps only the decision and the rule ids, never the command. `/swiftcraft:doctor` smoke-tests the guard and validates the rules file.
+
+**Limits:** it is a static check of the command text. It does not expand variables, globs or aliases, so it has false negatives and false positives. It complements, and does not replace, Claude Code's permission rules or the operating system's controls.
 
 ## PR review
 

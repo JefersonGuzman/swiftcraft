@@ -85,8 +85,8 @@ if (!jsFiles.length) {
 }
 
 const hook = (name) => path.join(ROOT, "hooks", "scripts", name);
-if (!exists(hook("protect-files.js")) || !exists(hook("odd-lint.js")) || !exists(hook("arch-lint.js"))) {
-  add("WARNING", "Hooks respond", "skipped: protect-files, odd-lint or arch-lint is missing");
+if (!exists(hook("protect-files.js")) || !exists(hook("odd-lint.js")) || !exists(hook("arch-lint.js")) || !exists(hook("command-guard.js"))) {
+  add("WARNING", "Hooks respond", "skipped: protect-files, odd-lint, arch-lint or command-guard is missing");
 } else {
   const failures = [];
   const smoke = (name, input, expected) => {
@@ -97,13 +97,31 @@ if (!exists(hook("protect-files.js")) || !exists(hook("odd-lint.js")) || !exists
   smoke("protect-files.js", "project/.env.example", 0); // the template must be allowed
   smoke("odd-lint.js", path.join(os.tmpdir(), "swiftcraft-doctor-nonexistent", "odd", "tasks", "x.md"), 0); // nothing to lint
   smoke("arch-lint.js", "project/README.md", 0); // not a source file
+  const guard = (command) => run(process.execPath, [hook("command-guard.js")], JSON.stringify({ tool_name: "Bash", tool_input: { command }, cwd: os.tmpdir() }));
+  const blocked = guard("rm -rf /");
+  if (blocked.status !== 0 || !String(blocked.stdout).includes('"permissionDecision":"deny"')) failures.push("command-guard did not block a catastrophic command");
+  const harmless = guard("ls");
+  if (harmless.status !== 0 || String(harmless.stdout).trim() !== "") failures.push("command-guard reacted to a harmless command");
   if (failures.length) add("ERROR", "Hooks respond", failures.join("; "), "Reinstall the plugin or open an issue with this output");
-  else add("OK", "Hooks respond", "4 smoke tests behave as expected");
+  else add("OK", "Hooks respond", "6 smoke tests behave as expected (the command guard blocks and stays silent when it should)");
 }
 
 // --- the current project --------------------------------------------------------------------------------------
 if (exists(path.join(PROJECT, "docs", "constitution.md"))) add("OK", "Project initialized", "docs/constitution.md found");
 else add("WARNING", "Project initialized", `no docs/constitution.md in ${PROJECT}`, "Run /swiftcraft:init in the project (read-only checks of the plugin itself are unaffected)");
+
+const guardFile = path.join(PROJECT, "docs", "guard-rules.json");
+if (!exists(guardFile)) {
+  add("OK", "Guard rules", "no project rules (the defaults apply)");
+} else {
+  try {
+    const g = JSON.parse(fs.readFileSync(guardFile, "utf8"));
+    if (!g || typeof g !== "object" || Array.isArray(g)) throw new Error("it must be a JSON object");
+    add("OK", "Guard rules", "docs/guard-rules.json is valid (deny rules can never be relaxed by it)");
+  } catch (e) {
+    add("WARNING", "Guard rules", `docs/guard-rules.json is invalid (${e.message}); the defaults apply`, "Fix the JSON, or delete the file");
+  }
+}
 
 const tasksDir = path.join(PROJECT, "odd", "tasks");
 const docs = exists(tasksDir) ? fs.readdirSync(tasksDir).filter((n) => n.endsWith(".md") && !n.startsWith("_")) : [];
