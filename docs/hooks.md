@@ -37,4 +37,4 @@ Every hook fails open on bad input: it never blocks because of a bug in itself. 
 
 ## Not verified
 
-These hooks are covered by tests with simulated input and, for the older ones, live runs. `prompt-guard`, `read-guard` and `settings-guard` have not been observed in a live interactive session, including how the confirmation prompt looks. Static matching on paths and token patterns has false positives and false negatives: it does not replace the platform's permissions.
+These hooks are covered by tests with simulated input. In a real Claude Code run (`claude -p --plugin-dir`, non-interactive), `prompt-guard` blocked a prompt holding a fake token and `read-guard` stopped a read of `.npmrc` (the tool call showed up in `permission_denials`). Claude Code itself echoes the blocked prompt back in its own message, so a pasted secret can still appear in your terminal: it is not sent to the model. `settings-guard` and the interactive confirmation prompt were not observed live. Static matching on paths and token patterns has false positives and false negatives: it does not replace the platform's permissions.
