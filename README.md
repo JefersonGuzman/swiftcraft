@@ -4,7 +4,7 @@
 
 A small Claude Code plugin that keeps vibe coding fast **and** organized: size-first workflow (ODD), architecture guardrails, test-first loop, written decisions, fresh-context review.
 
-Stack-agnostic. Lean on purpose: 13 skills, 4 agents, 15 commands, 10 hooks, about 950 tokens of always-on context (`claude plugin details swiftcraft@swiftcraft`).
+Stack-agnostic. Lean on purpose: 13 skills, 4 agents, 16 commands, 10 hooks, about 950 tokens of always-on context (`claude plugin details swiftcraft@swiftcraft`).
 
 ![The swiftcraft visual guide: "Vibe coding rápido, pero con oficio."](docs/img/guide-hero.jpg)
 
@@ -49,6 +49,7 @@ If you installed with `--plugin-dir`, update by running `git pull` in the harnes
 | 1 | `/swiftcraft:odd <request>` | Runs the ODD protocol: stays read-only unless you ask for a change, explores, **sizes the work** (small = straight to a test, no paperwork; large = a feature document `odd/tasks/<feature>.md` with your exact words), then implements task by task |
 | 2 | `/swiftcraft:build` | One task, RED → GREEN → REFACTOR, then stop, with a Risk line |
 | 3 | `/swiftcraft:review` | Fresh-context diff review, verdict |
+| — | `/swiftcraft:judge` | Optional adversarial review: two independent reviewers, merged by a script (no model) into coincident / discrepant / unconfirmed findings; costs about double, so it is shown first |
 | 4 | `/swiftcraft:commit` | Plans reviewable commit units (a test travels with its code, sensitive areas alone, ~400 lines advisory), checks branch and Conventional Commit messages (no AI attribution), commits one unit at a time after you confirm |
 | 5 | `/swiftcraft:pr` | Runs the project's own test/lint/build commands, drafts a PR description with task-to-commit traceability, real results and risk lines; pushes or opens the PR only after you confirm |
 | — | `/swiftcraft:status` | Where the active feature stands: a state (`working`, `checking`, `ready`, `needs-decision`), the reason and the single next action, derived only from the feature document |
