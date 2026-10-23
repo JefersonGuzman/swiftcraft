@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // Compare the installed swiftcraft version with the latest one published on GitHub.
 //   --notice   SessionStart hook mode: at most one network check per 24 h, silent unless an update exists,
-//              always exits 0. Opt out with SWIFTCRAFT_NO_UPDATE_CHECK=1.
+//              always exits 0. Opt out with SWIFTCRAFT_NO_UPDATE_CHECK=1 or updates.check in swiftcraft.config.json.
 //   --verbose  /swiftcraft:update mode: always checks, shows the CHANGELOG entries you would get and the
 //              commands to update. Exits 1 if GitHub cannot be reached.
 // This script never updates anything by itself.
@@ -18,7 +18,7 @@ const notice = args.includes("--notice");
 const verbose = args.includes("--verbose");
 const DAY = 24 * 60 * 60 * 1000;
 
-if (notice && process.env.SWIFTCRAFT_NO_UPDATE_CHECK === "1") process.exit(0);
+if (notice && !require("./lib/config.js").loadConfig(process.cwd()).values.updates.check) process.exit(0);
 
 const manifest = JSON.parse(fs.readFileSync(path.join(__dirname, "..", ".claude-plugin", "plugin.json"), "utf8"));
 const installed = manifest.version;

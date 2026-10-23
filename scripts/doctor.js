@@ -123,6 +123,16 @@ if (!exists(guardFile)) {
   }
 }
 
+{
+  const cfg = require("./lib/config.js").loadConfig(PROJECT, {});
+  if (cfg.errors.length) add("WARNING", "Project configuration", `swiftcraft.config.json is ignored until fixed (defaults apply): ${cfg.errors.join(" | ")}`, "Edit swiftcraft.config.json and run node scripts/config.js show to check it");
+  else if (!cfg.file) add("OK", "Project configuration", "no swiftcraft.config.json (the defaults apply)");
+  else {
+    const set = Object.entries(cfg.sources).filter(([, s]) => s === "project").map(([k]) => k);
+    add("OK", "Project configuration", `swiftcraft.config.json is valid${set.length ? ` (sets ${set.join(", ")})` : ""}`);
+  }
+}
+
 const tasksDir = path.join(PROJECT, "odd", "tasks");
 const docs = exists(tasksDir) ? fs.readdirSync(tasksDir).filter((n) => n.endsWith(".md") && !n.startsWith("_")) : [];
 if (!docs.length) {

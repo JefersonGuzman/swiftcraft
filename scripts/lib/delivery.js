@@ -7,8 +7,9 @@ const { spawnSync } = require("child_process");
 const { assess, itemsFor, isTest, isDoc, isCode, isGenerated } = require("./risk.js");
 const { SECRET_PATTERNS, redact } = require("./review.js");
 const { findActiveDoc, nextStep, parseFeatureDoc } = require("./odd.js");
+const { loadConfig, DEFAULTS } = require("./config.js");
 
-const ADVISORY_LINES = 400;
+const ADVISORY_LINES = DEFAULTS.delivery.advisoryLines;
 const BRANCH_RE = /^(feat|fix|docs|chore|release|refactor|test|ci|build|perf)\/[a-z0-9][a-z0-9._-]*$/;
 const SUBJECT_RE = /^(feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert)(\([a-z0-9._/-]+\))?!?: \S.*$/;
 
@@ -153,13 +154,15 @@ function plan(cwd) {
   const branchType = /^fix\//.test(git(["rev-parse", "--abbrev-ref", "HEAD"], root).out.trim()) ? "fix" : "feat";
   const units = buildUnits(authored, branchType);
   const totalAuthoredLines = authored.reduce((n, c) => n + c.added + c.removed, 0);
+  const advisoryLines = loadConfig(root).values.delivery.advisoryLines;
   return {
     root,
+    advisoryLines,
     branch: branchInfo(root, units, feature),
     feature,
     files: changes.length,
     totalAuthoredLines,
-    over400: totalAuthoredLines > ADVISORY_LINES,
+    over400: totalAuthoredLines > advisoryLines,
     units,
     generated,
     highRiskFiles: changes.filter((c) => !isDoc(c.path) && itemsFor(c.path).some((i) => i.n !== 6)).map((c) => c.path),
@@ -181,7 +184,7 @@ function formatPlan(p) {
     return out.join("\n");
   }
   out.push("", `Changes: ${p.files} file(s), ${p.totalAuthoredLines} authored line(s) (lockfiles and generated files not counted)`);
-  if (p.over400) out.push(`  About ${ADVISORY_LINES} authored lines is advisory, not a cap: split only where it keeps each commit easy to review.`);
+  if (p.over400) out.push(`  About ${p.advisoryLines} authored lines is advisory, not a cap: split only where it keeps each commit easy to review.`);
   out.push("", "Suggested commits (each one a reviewable unit; a test travels with the code it covers):");
   p.units.forEach((u, i) => {
     out.push(`  ${i + 1}. ${u.suggestedType} — ${u.name} (${u.files.length} file(s), ${u.authoredLines} line(s)) risk: ${u.risk.tier}${u.risk.items.length ? ` [${u.risk.items.map((x) => `item ${x.n}: ${x.why}`).join("; ")}]` : ""}`);
