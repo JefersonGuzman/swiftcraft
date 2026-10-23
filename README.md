@@ -4,7 +4,7 @@
 
 A small Claude Code plugin that keeps vibe coding fast **and** organized: size-first workflow (ODD), architecture guardrails, test-first loop, written decisions, fresh-context review.
 
-Stack-agnostic. Lean on purpose: 11 skills, 4 agents, 12 commands, 8 hooks, about 950 tokens of always-on context (`claude plugin details swiftcraft@swiftcraft`).
+Stack-agnostic. Lean on purpose: 12 skills, 4 agents, 13 commands, 8 hooks, about 950 tokens of always-on context (`claude plugin details swiftcraft@swiftcraft`).
 
 ![The swiftcraft visual guide: "Vibe coding rápido, pero con oficio."](docs/img/guide-hero.jpg)
 
@@ -44,7 +44,8 @@ If you installed with `--plugin-dir`, update by running `git pull` in the harnes
 
 | Step | Command | Result |
 |------|---------|--------|
-| 0 | `/swiftcraft:init` | Project scaffold: constitution, architecture, ADRs, feature-document template |
+| 0 | `/swiftcraft:init` | Project scaffold for a **new** project: constitution, architecture, ADRs, feature-document template |
+| 0 | `/swiftcraft:adopt` | For a project that **already has code**: read-only analysis (observed facts vs inferences vs uncertainties), then draft documents in `docs/proposed/` for you to review; never overwrites or changes code |
 | 1 | `/swiftcraft:odd <request>` | Runs the ODD protocol: stays read-only unless you ask for a change, explores, **sizes the work** (small = straight to a test, no paperwork; large = a feature document `odd/tasks/<feature>.md` with your exact words), then implements task by task |
 | 2 | `/swiftcraft:build` | One task, RED → GREEN → REFACTOR, then stop, with a Risk line |
 | 3 | `/swiftcraft:review` | Fresh-context diff review, verdict |
@@ -59,7 +60,7 @@ If you installed with `--plugin-dir`, update by running `git pull` in the harnes
 
 ## What's inside
 
-- **Skills**: `project-start`, `architecture-guard`, `odd`, `tdd-loop`, `adr`, `review-gate`, `context-hygiene`, `memory`, `token-saver`, `ui-design`, `pr-review`.
+- **Skills**: `project-start`, `architecture-guard`, `odd`, `tdd-loop`, `adr`, `review-gate`, `context-hygiene`, `memory`, `token-saver`, `ui-design`, `pr-review`, `adopt`.
 - **Agents**: `architect` (design), `reviewer` (diff review), `explorer` (compact code maps), `pr-reviewer` (PR findings as JSON). All read-only; `pr-reviewer` has no shell at all.
 - **Hooks**
   - `SessionStart`: injects `docs/constitution.md`; shows the active feature document (progress, next task) and restores its open tasks after compaction.
