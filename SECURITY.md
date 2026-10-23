@@ -39,7 +39,7 @@ sha256sum -c SHA256SUMS
 gh attestation verify swiftcraft-X.Y.Z.tar.gz --repo JefersonGuzman/swiftcraft
 ```
 
-Status: this pipeline is configured but **not verified** yet: it has not run on a real release. The first release that uses it will show whether the attestation and the checksum file are created and can be verified; until then do not rely on it. A checksum published next to the archive proves the download is intact, not that the project is trustworthy: review the code you install.
+Status: verified on release 0.6.0 (the first to use it): the workflow attached the archive and `SHA256SUMS`, the checksum matched a fresh download, and `gh attestation verify` succeeded. Prerelease (beta) tags have not been published yet, so that path is not verified. A checksum published next to the archive proves the download is intact, not that the project is trustworthy: review the code you install.
 
 ## Hardening tips
 
