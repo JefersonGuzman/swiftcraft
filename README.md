@@ -4,7 +4,7 @@
 
 A small Claude Code plugin that keeps vibe coding fast **and** organized: size-first workflow (ODD), architecture guardrails, test-first loop, written decisions, fresh-context review.
 
-Stack-agnostic. Lean on purpose: 13 skills, 4 agents, 16 commands, 13 hooks, about 950 tokens of always-on context (`claude plugin details swiftcraft@swiftcraft`).
+Stack-agnostic. Lean on purpose: 13 skills, 7 agents, 17 commands, 13 hooks, about 950 tokens of always-on context (`claude plugin details swiftcraft@swiftcraft`).
 
 ![The swiftcraft visual guide: "Vibe coding rápido, pero con oficio."](docs/img/guide-hero.jpg)
 
@@ -58,6 +58,7 @@ If you installed with `--plugin-dir`, update by running `git pull` in the harnes
 | — | `/swiftcraft:remember <text>` | Save to project memory |
 | — | `/swiftcraft:setup` | Check/install companions (Engram, RTK) |
 | — | `/swiftcraft:export` | Generate Cursor / Gemini CLI / Copilot rules from AGENTS.md |
+| — | `/swiftcraft:audit <security\|performance\|architecture\|all> [path]` | Expert audit of existing code: read-only experts report what is good and what is wrong in their area (Scope, Verdict, What is good, Findings with `path:line`, Not verified); they never edit, and a report is saved only if you ask |
 | — | `/swiftcraft:update` | Check for a newer version, see what changed, get the update commands |
 | — | `/swiftcraft:pr-review <n\|url>` | Review a GitHub PR against your constitution, feature documents and architecture; posts comments only after you confirm |
 
@@ -93,7 +94,7 @@ Some controls are mandatory and **not configurable**: the command guard's deny r
 ## What's inside
 
 - **Skills**: `project-start`, `architecture-guard`, `odd`, `tdd-loop`, `adr`, `review-gate`, `context-hygiene`, `memory`, `token-saver`, `ui-design`, `pr-review`, `adopt`, `delivery`.
-- **Agents**: `architect` (design), `reviewer` (diff review), `explorer` (compact code maps), `pr-reviewer` (PR findings as JSON). All read-only; `pr-reviewer` has no shell at all.
+- **Agents**: `architect` (design), `reviewer` (diff review), `explorer` (compact code maps), `pr-reviewer` (PR findings as JSON), and three experts that audit existing code and report what is good and what is wrong in their area: `security-auditor`, `performance-auditor` and `architecture-auditor` (use them with `/swiftcraft:audit`). All read-only; `pr-reviewer` and the three experts have only Read, Glob and Grep, so they cannot edit or run anything.
 - **Hooks**
   - `SessionStart`: injects `docs/constitution.md`; shows the active feature document (progress, next task) and restores its open tasks after compaction.
   - `PreToolUse` protect-files: blocks writes to `.env`, keys and certificates.

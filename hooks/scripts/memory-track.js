@@ -43,6 +43,7 @@ process.stdin.on("end", () => {
     st.nudgedAt = 0;
   } else if (/^(Write|Edit|MultiEdit)$/.test(tool)) {
     st.edits += 1;
+    st.sessionEdits = (st.sessionEdits || 0) + 1; // never reset: "this session changed files" (used by review-reminder)
   } else {
     process.exit(0);
   }

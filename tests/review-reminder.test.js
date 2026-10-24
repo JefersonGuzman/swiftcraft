@@ -16,7 +16,7 @@ const write = (dir, rel, text) => {
   fs.writeFileSync(f, text);
 };
 
-function setup() {
+function setup({ edited = true } = {}) {
   const dir = tmp("sc-rr-");
   const state = tmp("sc-rr-state-");
   sh(dir, "init", "-q", "-b", "main");
@@ -27,8 +27,19 @@ function setup() {
   const env = { SWIFTCRAFT_STATE_DIR: state };
   const stop = (extra = {}) => run("review-reminder.js", { session_id: "s1", cwd: dir, hook_event_name: "Stop", ...extra }, env);
   const track = (tool_name, tool_input, extra = {}) => run("review-track.js", { session_id: "s1", cwd: dir, hook_event_name: "PostToolUse", tool_name, tool_input, ...extra }, env);
+  // A Write by the main agent, as the memory-track hook sees it: the reminder only applies to sessions that edited files.
+  if (edited) run("memory-track.js", { session_id: "s1", cwd: dir, hook_event_name: "PostToolUse", tool_name: "Write", tool_input: { file_path: path.join(dir, "src", "app.js") } }, env);
   return { dir, state, env, stop, track };
 }
+
+test("a session that edited nothing is never nagged about a diff that was already there", () => {
+  const { dir, stop } = setup({ edited: false });
+  write(dir, "src/auth/login.js", "exports.login = 1;\n");
+  assert.strictEqual(stop().stdout.trim(), "", "read-only session: silent");
+  const edited = setup();
+  write(edited.dir, "src/auth/login.js", "exports.login = 1;\n");
+  assert.match(edited.stop().stdout, /\/swiftcraft:review/, "after an edit in the session it reminds");
+});
 
 test("no sensitive change: no reminder", () => {
   const { dir, stop } = setup();
@@ -82,8 +93,8 @@ test("it stays quiet when it should: stop_hook_active, opt-out, not a repository
   const { dir, stop, env } = setup();
   write(dir, "src/auth/login.js", "x\n");
   assert.strictEqual(stop({ stop_hook_active: true }).stdout.trim(), "");
-  assert.strictEqual(run("review-reminder.js", { session_id: "s2", cwd: dir }, { ...env, SWIFTCRAFT_NO_REVIEW_REMINDER: "1" }).stdout.trim(), "");
-  assert.strictEqual(run("review-reminder.js", { session_id: "s3", cwd: tmp("sc-rr-nogit-") }, env).stdout.trim(), "");
+  assert.strictEqual(run("review-reminder.js", { session_id: "s1", cwd: dir }, { ...env, SWIFTCRAFT_NO_REVIEW_REMINDER: "1" }).stdout.trim(), "");
+  assert.strictEqual(run("review-reminder.js", { session_id: "s1", cwd: tmp("sc-rr-nogit-") }, env).stdout.trim(), "");
   const clean = setup();
   assert.strictEqual(clean.stop().stdout.trim(), "");
 });
