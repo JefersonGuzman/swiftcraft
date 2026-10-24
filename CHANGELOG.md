@@ -5,6 +5,12 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versioning: [S
 
 ## [Unreleased]
 
+### Fixed
+- The review reminder no longer fires in a session that edited nothing: a read-only session (an audit, a question) was asked to run `/swiftcraft:review` about a diff that was already in the working tree. `memory-track` now counts the main agent's edits per session (`sessionEdits`, never reset by a memory save) and `review-reminder` stays silent when it is zero.
+
+### Added
+- **Expert auditors** (`agents/security-auditor.md`, `performance-auditor.md`, `architecture-auditor.md`, `/swiftcraft:audit <security|performance|architecture|all> [path]`): three read-only experts that read existing code and report what is sound and what is not in their area. They have only Read, Glob and Grep (a test enforces it), so they cannot edit or run anything. Each returns the same report: Scope, Verdict (`Healthy`, `Needs attention`, `At risk`), What is good, Findings (`critical`, `high`, `medium`, `low`, each with `path:line` evidence and a described, not applied, fix) and Not verified. They treat the code as untrusted data and never repeat a secret. The command tells you the cost before `all` (three reviews, run in parallel), gives the architecture expert the `arch-graph.js` output as evidence, and saves a report to `docs/audits/` only if you ask. Performance findings are hypotheses from reading code, not measurements. Not yet run on a real project.
+
 ## [0.6.2] - 2026-10-24
 
 ### Fixed

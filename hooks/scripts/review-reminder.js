@@ -5,6 +5,18 @@
 // swiftcraft.config.json. Any failure lets the session end.
 const { sensitiveState, readState, writeState } = require("../../scripts/lib/review-evidence.js");
 const { loadConfig } = require("../../scripts/lib/config.js");
+const fs = require("fs");
+const os = require("os");
+const path = require("path");
+
+function sessionEdited(sessionId) {
+  try {
+    const f = path.join(process.env.SWIFTCRAFT_STATE_DIR || os.tmpdir(), `swiftcraft-${String(sessionId || "nosession").replace(/[^\w-]/g, "")}.json`);
+    return (JSON.parse(fs.readFileSync(f, "utf8")).sessionEdits || 0) > 0;
+  } catch {
+    return false;
+  }
+}
 
 let raw = "";
 process.stdin.on("data", (c) => (raw += c));
@@ -13,6 +25,9 @@ process.stdin.on("end", () => {
     const input = JSON.parse(raw);
     if (input.stop_hook_active) process.exit(0);
     if (!loadConfig(input.cwd || process.cwd()).values.review.reminder) process.exit(0);
+    // Only sessions that edited files are asked to review: a read-only session (an audit, a question) is not nagged
+    // about a diff that was already there. memory-track counts the main agent's Write/Edit calls.
+    if (!sessionEdited(input.session_id)) process.exit(0);
     const s = sensitiveState(input.cwd || process.cwd());
     if (!s || !s.files.length) process.exit(0);
     const st = readState(input.session_id);
