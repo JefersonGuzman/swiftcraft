@@ -5,6 +5,8 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versioning: [S
 
 ## [Unreleased]
 
+## [0.7.0] - 2026-10-24
+
 ### Fixed
 - The review reminder no longer fires in a session that edited nothing: a read-only session (an audit, a question) was asked to run `/swiftcraft:review` about a diff that was already in the working tree. `memory-track` now counts the main agent's edits per session (`sessionEdits`, never reset by a memory save) and `review-reminder` stays silent when it is zero.
 
