@@ -5,6 +5,8 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versioning: [S
 
 ## [Unreleased]
 
+## [0.7.1] - 2026-10-24
+
 ### Fixed
 - `/swiftcraft:audit` now pastes each expert's report verbatim (complete table, every finding) instead of paraphrasing it; its own comments, summary table and any contradiction it notices come after the reports. The experts state that they only read and never claim to have run anything; the architecture expert says in Scope whether graph output was provided by the caller (the command passes "no graph output is available" when `arch-graph.js` cannot run) and cannot claim to have run it. Found by running the performance and architecture experts on a real demo project: the architecture report said it confirmed the graph result and also that it did not run it.
 
