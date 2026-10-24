@@ -6,6 +6,8 @@ const fs = require("fs");
 const os = require("os");
 const path = require("path");
 
+const { REGISTER_ARGS, claudeRunner, mcpRegistered, register } = require("./lib/engram-mcp.js");
+
 const apply = process.argv.includes("--apply");
 const MARKETPLACE = "Gentleman-Programming/engram";
 const PLUGIN = "engram@engram";
@@ -24,7 +26,7 @@ ok("engram binary", hasBin, "install from https://github.com/Gentleman-Programmi
 if (hasBin) console.log("     " + (bin.stdout || "").trim().split("\n")[0]);
 
 // 2. claude CLI
-const hasClaude = run("claude", ["--version"]).status === 0;
+const hasClaude = claudeRunner()(["--version"]).status === 0;
 ok("claude CLI", hasClaude, "needed only for --apply");
 
 // 3. plugin enabled
@@ -54,7 +56,23 @@ if (apply && !enabled) {
   console.log("Done. Restart Claude Code to load Engram.");
 }
 
-console.log(hasBin && (enabled || apply) ? "\nEngram ready." : "\nEngram not fully set up (see MISS above). Memory falls back to docs/memory/.");
+// 3b. MCP server: the plugin alone gives hooks and skills; the mem_* tools need the "engram" MCP server registered.
+const runClaude = claudeRunner();
+const mcpOk = hasClaude && mcpRegistered(runClaude);
+ok("MCP server engram", mcpOk, hasClaude ? "re-run with --apply, or: claude mcp add --scope user engram -- engram mcp" : "needs the claude CLI");
+let registered = mcpOk;
+if (apply && hasClaude && hasBin && !mcpOk) {
+  const r = register(runClaude);
+  console.log(`$ claude ${REGISTER_ARGS.join(" ")} -> exit ${r.status}`);
+  if (r.status !== 0) {
+    console.error((r.stderr || r.stdout || "").trim());
+    process.exit(1);
+  }
+  registered = true;
+  console.log("Registered. Restart Claude Code to load the mem_* tools.");
+}
+
+console.log(hasBin && (enabled || apply) && registered ? "\nEngram ready." : "\nEngram not fully set up (see MISS above). Memory falls back to docs/memory/.");
 
 // 4. RTK (token saver, optional). --with-rtk installs it via winget (Windows) and registers the hook.
 const hasRtk = run("rtk", ["gain"]).status === 0;

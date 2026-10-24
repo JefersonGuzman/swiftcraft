@@ -5,6 +5,9 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versioning: [S
 
 ## [Unreleased]
 
+### Fixed
+- Engram memory could look "ready" while the `mem_*` tools did not exist: the `engram@engram` plugin only brings hooks and skills, and the `engram` MCP server must be registered in Claude Code separately. `/swiftcraft:setup` (`setup-engram.js`) now checks that registration and, with `--apply` (and the engram binary present), runs `claude mcp add --scope user engram -- engram mcp`; `/swiftcraft:doctor` warns with that fix when the server is missing. A restart of Claude Code is still needed to load the tools.
+
 ## [0.6.1] - 2026-10-23
 
 ### Fixed
