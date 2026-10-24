@@ -147,6 +147,15 @@ if (!docs.length) {
   else add("OK", "Feature documents", `${docs.length} document(s), all valid`);
 }
 
+{
+  const { claudeRunner, mcpRegistered } = require("./lib/engram-mcp.js");
+  const runClaude = claudeRunner();
+  if (runClaude(["--version"]).status === 0) {
+    if (mcpRegistered(runClaude)) add("OK", "Engram MCP server", "Claude Code has the engram MCP server (mem_* tools load after a restart)");
+    else add("WARNING", "Engram MCP server", "Claude Code has no MCP server named engram, so the mem_* memory tools do not exist (the engram@engram plugin alone only adds hooks and skills)", "Run node scripts/setup-engram.js --apply, or: claude mcp add --scope user engram -- engram mcp, then restart Claude Code");
+  }
+}
+
 const entries = exists(TMP) ? fs.readdirSync(TMP, { withFileTypes: true }) : [];
 const age = (p) => Date.now() - fs.statSync(p).mtimeMs;
 const scratch = entries
