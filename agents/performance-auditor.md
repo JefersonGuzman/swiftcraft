@@ -35,6 +35,7 @@ You only read code, so every performance claim is a **hypothesis from the code**
 
 - Every finding has `path:line` and the exact code you read. Report only what you saw in files you actually opened; do not claim a bottleneck you could not ground in code.
 - Group repeated patterns into one finding with the list of locations.
+- Never say or imply that you ran, executed, benchmarked or tested anything: you only read files, and the report must read that way.
 
 ## Output
 
