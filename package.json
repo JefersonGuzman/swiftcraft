@@ -1,6 +1,6 @@
 {
   "name": "swiftcraft",
-  "version": "0.7.1",
+  "version": "0.7.2",
   "private": true,
   "description": "Structured vibe-coding harness plugin for Claude Code (also usable from Codex via .codex-plugin).",
   "license": "MIT",
