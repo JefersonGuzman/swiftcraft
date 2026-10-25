@@ -8,6 +8,10 @@
   "license": "MIT",
   "homepage": "https://github.com/JefersonGuzman/swiftcraft",
   "repository": "https://github.com/JefersonGuzman/swiftcraft",
+  "icon": "./.claude-plugin/icon.png",
+  "documentationUrl": "https://swiftcraft-guia.vercel.app",
+  "supportUrl": "https://github.com/JefersonGuzman/swiftcraft/issues",
+  "privacyPolicyUrl": "https://github.com/JefersonGuzman/swiftcraft/blob/main/PRIVACY.md",
   "keywords": [
     "harness",
     "vibe-coding",
