@@ -1,6 +1,6 @@
 ---
 name: pr-reviewer
-description: Reviews a fetched pull request (meta.json + diff.patch on disk) against the project's constitution, feature documents and architecture rules and returns structured findings JSON. Read-only, no shell. Use via the pr-review skill.
+description: Reviews a fetched pull request (meta.json + diff.patch) against the project's rules and returns findings JSON. Read-only, no shell. Use via the pr-review skill.
 tools: Read, Glob, Grep
 ---
 

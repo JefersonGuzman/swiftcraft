@@ -1,6 +1,6 @@
 ---
 name: adopt
-description: Bring the swiftcraft harness to a project that already has code. Read-only analysis that separates observed facts from inferences, then draft documents in docs/proposed for the user to review. Use when the user wants to start using swiftcraft on an existing repository.
+description: Bring the harness to a project that already has code: read-only analysis (observed vs inferred), then drafts in docs/proposed. Use when starting swiftcraft on an existing repository.
 ---
 
 # adopt

@@ -1,6 +1,6 @@
 ---
 name: performance-auditor
-description: Performance expert that reads code and reports what is efficient and what will not scale (algorithmic complexity, N+1 queries, blocking work, caching, memory, payload and render cost). Read-only, never edits, static analysis only. Use when you want a performance assessment of a module, a feature, the whole project or a diff.
+description: Read-only performance expert: reads code and reports what is efficient and what will not scale (complexity, N+1, blocking work, caching). Never edits. Use when you want a performance assessment.
 tools: Read, Glob, Grep
 ---
 

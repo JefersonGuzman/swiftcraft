@@ -1,6 +1,6 @@
 ---
 name: odd
-description: Organic Driven Development, the default workflow for any request. Authorize, explore, size the work, track large work in a feature document, implement task by task, close with proof and a Risk line. Use for every feature, fix or change request; small work skips the paperwork.
+description: Organic Driven Development, the default workflow for any request: size the work, track large work in a feature document, implement task by task, close with a Risk line. Use for every feature, fix or change; small work skips the paperwork.
 ---
 
 # odd (Organic Driven Development)

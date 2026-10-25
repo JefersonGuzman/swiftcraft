@@ -1,6 +1,6 @@
 ---
 name: security-auditor
-description: Security expert that reads code and reports what is sound and what is vulnerable (secrets, authentication, authorization, injection, input validation, data exposure, dependencies, configuration). Read-only, never edits. Use when you want a security assessment of a module, a feature, the whole project or a diff.
+description: Read-only security expert: reads code and reports what is sound and what is vulnerable (secrets, auth, injection, data exposure). Never edits. Use when you want a security assessment.
 tools: Read, Glob, Grep
 ---
 
