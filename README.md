@@ -122,6 +122,14 @@ Check a document yourself with `node scripts/odd.js check odd/tasks/<feature>.md
 
 The `memory` skill and `/swiftcraft:remember` use [Engram](https://github.com/Gentleman-Programming/engram) MCP tools when present (`mem_current_project`, `mem_save`, `mem_search`, `mem_context`, `mem_session_summary`) and fall back to `docs/memory/*.md` otherwise. The `SessionStart` hook reminds the agent of the protocol. Run `/swiftcraft:setup` to check the Engram binary and install its plugin (`node scripts/setup-engram.js --apply`); the binary itself is installed from Engram's docs.
 
+## What the plugin runs, sends and fetches
+
+- **Hooks** run local Node scripts (from the plugin folder) on session start, on your prompts, before and after tool calls and when a turn ends. They read what Claude Code passes them (a file path, a command, your prompt) and decide locally: block or ask before risky actions, stop a prompt that contains a token, track edits, remind you to review or save memory. They write small state files to the OS temp folder.
+- **Update notice:** at most once every 24 hours it requests the latest release from `api.github.com` (fallback `raw.githubusercontent.com`). Nothing about you or your project is sent. Disable it with `SWIFTCRAFT_NO_UPDATE_CHECK=1`.
+- **GitHub CLI:** `/swiftcraft:pr-review` and `/swiftcraft:pr` use your own authenticated `gh`, and publish only when you confirm.
+- **Optional installs:** `scripts/setup-engram.js --apply` (and `--with-rtk`) installs third-party tools only when you run it with those flags, and registers the Engram MCP server in your Claude Code configuration.
+- There is no telemetry and nothing is sent to the maintainer. Details: [PRIVACY.md](PRIVACY.md) and [SECURITY.md](SECURITY.md).
+
 ## Other agents
 
 - **Codex / OpenCode / Cursor / Gemini / Copilot** read `AGENTS.md` (open standard). `/swiftcraft:export` generates `.cursor/rules/swiftcraft.mdc`, `GEMINI.md` and `.github/copilot-instructions.md` from it.

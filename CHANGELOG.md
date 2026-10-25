@@ -5,6 +5,9 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versioning: [S
 
 ## [Unreleased]
 
+### Added
+- **Ready for Anthropic's plugin directory** (not submitted yet): `PRIVACY.md` (no telemetry; the update notice is the only network request, to GitHub; everything local), manifest metadata (`icon`, `documentationUrl`, `supportUrl`, `privacyPolicyUrl`), a README section "What the plugin runs, sends and fetches", and `docs/directory-submission.md` with the checks that pass, the steps only the account owner can do in the portal and an honest list of what a reviewer may flag. `tests/directory-submission.test.js` keeps the directory's file limits, the absence of package launchers and the disclosure true. The portal's own validation and scan have not been run.
+
 ## [0.7.1] - 2026-10-24
 
 ### Fixed
