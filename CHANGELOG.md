@@ -5,6 +5,8 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versioning: [S
 
 ## [Unreleased]
 
+## [0.7.2] - 2026-10-25
+
 ### Changed
 - **Lower always-on context cost**: shortened the descriptions of the three expert auditors, `pr-reviewer` and the skills `adopt`, `delivery`, `pr-review`, `odd` and `token-saver`. `claude plugin details` reports the always-on cost (names and descriptions carried in every session) down from about 2,204 to about 1,973 tokens. The README claimed about 950 tokens, which had become stale as skills and agents were added; it now states the measured figure and how to check it. `tests/token-budget.test.js` keeps names and descriptions under a character budget (about 2,000 tokens) and no description longer than 330 characters. Shorter descriptions can change when a skill is chosen automatically; the commands that name the agents explicitly are unaffected, and no trigger-matching eval was run, so that effect is not verified.
 
