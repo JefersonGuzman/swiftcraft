@@ -1,6 +1,6 @@
 ---
 name: architecture-auditor
-description: Architecture expert that reads code and reports how well it follows the project's structure (dependency rule, layers, ports and adapters, boundaries, cycles, coupling, cohesion, testability). Read-only, never edits. Use when you want an architecture assessment of a module, a feature, the whole project or a diff; it audits existing code, while the architect agent designs new work.
+description: Read-only architecture expert: audits existing code for layers, dependency rule, boundaries and cycles. Never edits (the architect agent designs new work). Use when you want an architecture assessment.
 tools: Read, Glob, Grep
 ---
 

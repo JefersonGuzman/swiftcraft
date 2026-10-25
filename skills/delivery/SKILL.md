@@ -1,6 +1,6 @@
 ---
 name: delivery
-description: Turn finished work into reviewable commits and a traceable pull request. Plans the commit units, checks branch and message rules, validates with the project's own commands and drafts the PR description. Use when work is ready to commit, push or open a PR.
+description: Turn finished work into reviewable commits and a traceable pull request (commit plan, branch and message rules, validation, PR description). Use when work is ready to commit, push or open a PR.
 ---
 
 # delivery

@@ -4,7 +4,7 @@
 
 A small Claude Code plugin that keeps vibe coding fast **and** organized: size-first workflow (ODD), architecture guardrails, test-first loop, written decisions, fresh-context review.
 
-Stack-agnostic. Lean on purpose: 13 skills, 7 agents, 17 commands, 13 hooks, about 950 tokens of always-on context (`claude plugin details swiftcraft@swiftcraft`).
+Stack-agnostic. Lean on purpose: 13 skills, 7 agents, 17 commands, 13 hooks, about 2,000 tokens of always-on context (measured: 1,973 in 0.7.1, only names and descriptions; bodies load when used) (`claude plugin details swiftcraft@swiftcraft`).
 
 ![The swiftcraft visual guide: "Vibe coding rápido, pero con oficio."](docs/img/guide-hero.jpg)
 

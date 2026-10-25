@@ -1,6 +1,6 @@
 ---
 name: pr-review
-description: Review a GitHub pull request against the project's constitution, feature documents and architecture, and optionally post the findings as PR comments after the user confirms. Use when the user gives a PR number or URL, or asks for a PR review with comments.
+description: Review a GitHub pull request against the project's rules and, after the user confirms, post the findings as comments. Use when the user gives a PR number or URL or asks for a PR review.
 ---
 
 # pr-review

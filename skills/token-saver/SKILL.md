@@ -1,6 +1,6 @@
 ---
 name: token-saver
-description: Cut token usage in long or tool-heavy sessions (tool output, file reads, context growth, reply length). Use when a session feels expensive, before large exploration or test/build runs, or when the user asks to save tokens.
+description: Cut token usage in long or tool-heavy sessions. Use when a session feels expensive, before large exploration or test/build runs, or when the user asks to save tokens.
 ---
 
 # token-saver
